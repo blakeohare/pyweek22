@@ -11,25 +11,64 @@ class PlayScene:
 		# use a dictionary instead of a list since the 2D grid is 1 million by 1 million
 		self.tilesByIndexCache = None # lazily initialized from self.chunks
 		self.chunks = [getMapChunk('starting')] # list of dictionaries of tile indices
-		self.chunkOffsets = [(1000000, 1000000)]
-		self.player.x = 1000002.0
-		self.player.y = 1000004.0
+		self.chunkOffsets = [(VIRTUAL_WIDTH // 2, VIRTUAL_HEIGHT // 2)]
+		self.player.x = self.chunkOffsets[0][0] + 2.0
+		self.player.y = self.chunkOffsets[0][1] + 3.0
+		self.shooterCooldown = -1
+		self.cameraX = self.player.x * 64
+		self.cameraY = self.player.y * 64
 		
 		
 	def update(self):
+		player = self.player
+		bulletOriginX = player.x
+		bulletOriginY = player.y - player.height * .75
+		
+		pxScreen = bulletOriginX * 64 - self.cameraX + SCREEN_WIDTH // 2
+		pyScreen = bulletOriginY * 64 - self.cameraY + SCREEN_HEIGHT // 2
 		dt = 1.0 / FPS # bullet time would go here
 		#for sprite in self.sprites:
 		#	sprite.update(self, dt)
+		self.shooterCooldown -= 1
+		
+		bulletVelocity = 3.0
+		
+		if InputManager.isShooting and self.shooterCooldown < 0:
+			self.shooterCooldown = 13
+			shoot = False
+			if InputManager.mousePosition != None:
+				mx, my = InputManager.mousePosition
+				dx = mx - pxScreen
+				dy = my - pyScreen
+				dist = (dx ** 2 + dy ** 2) ** .5
+				if dist > 10:
+					ux = dx / dist
+					uy = dy / dist
+					shoot = True
+			elif InputManager.shootStickDirection != None:
+				ux = 0.0
+				uy = 1.0
+				shoot = True
+			if shoot:
+				vx = ux / 30 * bulletVelocity
+				vy = uy / 30 * bulletVelocity
+				self.projectiles.append(Projectile(bulletOriginX, bulletOriginY, vx, vy, (128, 255, 255), 3))
+		
+		for projectile in self.projectiles:
+			projectile.update(self)
+		
 		
 	def render(self, screen):
 		# There are 7 layers
 		
-		cameraX = self.player.x * 64 - screen.get_width() // 2
-		cameraY = self.player.y * 64 - screen.get_height() // 2
+		cameraX = self.player.x * 64
+		cameraY = self.player.y * 64
+		cameraOffsetX = -cameraX + SCREEN_WIDTH // 2
+		cameraOffsetY = -cameraY + SCREEN_HEIGHT // 2
 		
-		self.renderTiles(screen, cameraX, cameraY)
-		self.renderProjectiles(screen, self.projectiles, cameraX, cameraY)
-		self.renderSprites(screen, self.sprites, cameraX, cameraY)
+		self.renderTiles(screen, cameraOffsetX, cameraOffsetY)
+		self.renderProjectiles(screen, self.projectiles, cameraOffsetX, cameraOffsetY)
+		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY)
 		self.renderLighting(screen, self.projectiles, cameraX, cameraY)
 		#self.renderText(screen)
 		#self.renderHud(screen)
@@ -47,12 +86,12 @@ class PlayScene:
 					y = index // width
 					x = chunkOffsets[0] + x
 					y = chunkOffsets[1] + y
-					newIndex = x + y * 1000000
+					newIndex = x + y * VIRTUAL_WIDTH
 					self.tilesByIndexCache[newIndex] = tiles[index]
 	
-	def renderTiles(self, screen, cameraX, cameraY):
-		left = int((cameraX - SCREEN_WIDTH / 2) / 64 - 2)
-		top = int((cameraY - SCREEN_HEIGHT / 2) / 64 - 2)
+	def renderTiles(self, screen, cameraOffsetX, cameraOffsetY):
+		left = int(-cameraOffsetX / 64 - 2)
+		top = int(-cameraOffsetY / 64 - 2)
 		right = left + SCREEN_WIDTH // 64 + 4
 		bottom = top + SCREEN_HEIGHT // 64 + 4
 		
@@ -62,27 +101,29 @@ class PlayScene:
 		lookup = self.tilesByIndexCache
 		row = top
 		while row <= bottom:
-			index = left + row * 1000000
-			endIndex = index - left + right
-			py = row * 64 - cameraY + SCREEN_HEIGHT // 2
-			px = left * 64 - cameraX + SCREEN_WIDTH // 2
+			index = left + row * VIRTUAL_WIDTH
+			endIndex = right + row * VIRTUAL_WIDTH
+			py = row * 64 + cameraOffsetY
+			px = left * 64 + cameraOffsetX
 			while index <= endIndex:
 				tile = lookup.get(index, 'block')
 				if tile == 'block':
 					pygame.draw.rect(screen, black, (px, py, 64, 64))
 				elif tile == 'empty':
 					pass
+				
 				index += 1
 				px += 64
 			row += 1
 		
 	
-	def renderProjectiles(self, screen, projectiles, cameraX, cameraY):
-		pass
+	def renderProjectiles(self, screen, projectiles, cameraOffsetX, cameraOffsetY):
+		for projectile in projectiles:
+			projectile.renderSecondPass(screen, cameraOffsetX, cameraOffsetY)
 		
-	def renderSprites(self, screen, sprites, cameraX, cameraY):
+	def renderSprites(self, screen, sprites, cameraOffsetX, cameraOffsetY):
 		for sprite in sprites:
-			sprite.render(screen, cameraX, cameraY)
+			sprite.render(screen, cameraOffsetX, cameraOffsetY)
 	
 	def renderLighting(self, screen, projectiles, cameraX, cameraY):
 		pass

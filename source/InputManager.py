@@ -3,8 +3,8 @@ class InputManager_:
 	def __init__(self):
 		self.menuEventQueue = []
 		self.gameplayEventQueue = []
-		self.mousePosition = [0, 0]
-		self.shootStickDirection = [0.0, 0.0]
+		self.mousePosition = None
+		self.shootStickDirection = None
 		self.isShooting = False
 		self.moveStickDirection = [-1.0, 0.0]
 		self.quitAttempted = False
@@ -46,6 +46,9 @@ class InputManager_:
 				elif k == pygame.K_F4:
 					if self.systemKeysPressed.get(pygame.K_LALT, False) or self.systemKeysPressed.get(pygame.K_RALT, False):
 						self.quitAttempted = True
+			elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
+				self.mousePosition = event.pos
+				self.isShooting = event.type == pygame.MOUSEBUTTONDOWN
 			elif event.type == pygame.QUIT:
 				self.quitAttempted = True
 		

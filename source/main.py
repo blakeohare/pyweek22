@@ -3,7 +3,7 @@ def main():
 	fps = 60
 	
 	pygame.init()
-	screen = pygame.display.set_mode((800, 600))
+	screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 	
 	scene = PlayScene()
 	
