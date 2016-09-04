@@ -22,8 +22,6 @@ class PlayScene:
 		self.xs = list(range(self.width))
 		self.ys = list(range(self.height))
 		
-		print self.player.x, self.player.y
-		
 		self.rt = 0.0 # current time as far as the renderer is concerned
 		self.rtLast = time.time() # the last time the rt value was updated
 		
@@ -31,7 +29,16 @@ class PlayScene:
 		player = self.player
 		playerPos = (player.x, player.y)
 		
-		dt = 1.0 / FPS # bullet time would go here
+		movementVector = InputManager.getDirectionVector()
+		
+		if player.ground:
+			player.dx = movementVector[0]
+			
+			if InputManager.jumpPressed:
+				player.ground = None
+				player.vy = -.15
+		
+		dt = 1.0 # TODO: update for bullet time
 		for sprite in self.sprites:
 			sprite.update(self, dt)
 		
