@@ -1,6 +1,6 @@
 
 class Tile:
-	def __init__(self, col, row, template):
+	def __init__(self, template, col, row):
 		self.images = template.images
 		self.col = col
 		self.row = row

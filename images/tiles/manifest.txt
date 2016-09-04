@@ -1,0 +1,13 @@
+# Manifest
+# columns (tab-delimited):
+# - tile ID
+# - flags
+#   P  passthrough
+#	-  nothing
+#   /  incline up
+#   \  incline down
+# - images (comma-delimited or - for no image)
+#
+# a period (.) is an empty space
+
+x	-	block
