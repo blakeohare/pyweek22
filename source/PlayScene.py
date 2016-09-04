@@ -2,7 +2,7 @@
 class PlayScene:
 	def __init__(self):
 		self._next = None
-		self.player = Sprite('player', 2, 2)
+		self.player = Sprite('player', 2, 3)
 		self.sprites = [self.player]
 		self.projectiles = []
 		
@@ -28,7 +28,9 @@ xxxxxxxxxx""".strip().replace('\r\n', '\n').replace('\r', '\n').split('\n')
 		self.height = height
 		
 	def update(self):
-		pass
+		dt = 1.0 / FPS # bullet time would go here
+		for sprite in self.sprites:
+			sprite.update(self, dt)
 		
 	def render(self, screen):
 		# There are 7 layers
