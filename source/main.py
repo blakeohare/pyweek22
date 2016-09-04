@@ -37,5 +37,7 @@ def main():
 		delay = 1.0 / fps - diff
 		if delay > 0:
 			time.sleep(delay)
+		else:
+			print "Dropping frames!"
 
 main()

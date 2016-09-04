@@ -17,6 +17,10 @@ class PlayScene:
 		self.shooterCooldown = -1
 		self.cameraX = self.player.x * 64
 		self.cameraY = self.player.y * 64
+		self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+		self.overlay.fill((0, 0, 0))
+		self.lightblender = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+		
 		
 		
 	def update(self):
@@ -31,7 +35,7 @@ class PlayScene:
 		#	sprite.update(self, dt)
 		self.shooterCooldown -= 1
 		
-		bulletVelocity = 3.0
+		bulletVelocity = 10.0
 		
 		if InputManager.isShooting and self.shooterCooldown < 0:
 			self.shooterCooldown = 13
@@ -69,7 +73,7 @@ class PlayScene:
 		self.renderTiles(screen, cameraOffsetX, cameraOffsetY)
 		self.renderProjectiles(screen, self.projectiles, cameraOffsetX, cameraOffsetY)
 		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY)
-		self.renderLighting(screen, self.projectiles, cameraX, cameraY)
+		self.renderLighting(screen, self.projectiles, cameraOffsetX, cameraOffsetY)
 		#self.renderText(screen)
 		#self.renderHud(screen)
 	
@@ -95,7 +99,7 @@ class PlayScene:
 		right = left + SCREEN_WIDTH // 64 + 4
 		bottom = top + SCREEN_HEIGHT // 64 + 4
 		
-		screen.fill((0, 0, 100))
+		screen.fill((200, 200, 200))
 		black = (0, 0, 0)
 		self.ensureTilesFilled()
 		lookup = self.tilesByIndexCache
@@ -119,11 +123,23 @@ class PlayScene:
 	
 	def renderProjectiles(self, screen, projectiles, cameraOffsetX, cameraOffsetY):
 		for projectile in projectiles:
-			projectile.renderSecondPass(screen, cameraOffsetX, cameraOffsetY)
+			projectile.renderBullet(screen, cameraOffsetX, cameraOffsetY)
 		
 	def renderSprites(self, screen, sprites, cameraOffsetX, cameraOffsetY):
 		for sprite in sprites:
 			sprite.render(screen, cameraOffsetX, cameraOffsetY)
 	
-	def renderLighting(self, screen, projectiles, cameraX, cameraY):
-		pass
+	def renderLighting(self, screen, projectiles, cameraOffsetX, cameraOffsetY):
+		pygame.draw.rect(self.overlay, (0, 0, 0), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
+		self.lightblender.blit(self.overlay, (0, 0), None, pygame.BLEND_RGBA_SUB)
+		
+		for projectile in projectiles:
+			for path, scale in [('gradients/blue_30.png', 1), ('gradients/blue.png', .3)]:
+				blueGradient = ImageLibrary.getAtScale(path, scale)
+				x = int(projectile.x * 64 + cameraOffsetX)
+				y = int(projectile.y * 64 + cameraOffsetY)
+				w, h = blueGradient.get_size()
+				self.lightblender.blit(blueGradient, (x - w // 2, y - h // 2))
+		
+		self.overlay.blit(self.lightblender, (0, 0), None, pygame.BLEND_RGBA_SUB)
+		screen.blit(self.overlay, (0, 0))

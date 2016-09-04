@@ -34,10 +34,7 @@ class Projectile:
 		self.x += self.vx
 		self.y += self.vy
 	
-	def renderFirstPass(self, screen):
-		pass
-	
-	def renderSecondPass(self, screen, cameraOffsetX, cameraOffsetY):
+	def renderBullet(self, screen, cameraOffsetX, cameraOffsetY):
 		x = int(self.x * 64 + cameraOffsetX)
 		y = int(self.y * 64 + cameraOffsetY)
 		s = self.size
