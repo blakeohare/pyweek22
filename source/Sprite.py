@@ -20,10 +20,11 @@ class Sprite:
 		newX = self.x + dx
 		newCol = int(newX)
 		oldCol = int(self.x)
+		rowBottom = int(self.y)
+		rowTop = int(self.y - self.effectiveHeight)
+		
 		if (self.ground == None):
 			# flying horizontally through the air
-			rowBottom = int(self.y)
-			rowTop = int(self.y - self.effectiveHeight)
 			
 			#####
 			# first ensure that no inclines were collided with in the current tile
@@ -87,36 +88,263 @@ class Sprite:
 				if not tile.isIncline:
 					return # Collision
 				
-				if tile.inclineType:
-					
+				collisionY = self.y % 1.0
+				if collisionY < 0.01: collisionY = 0.01
+				elif collision > 0.99: collisionY = 0.99
 				
+				if tile.inclineType == 'up':
+					if oldCol > newCol: return
+					if collisionY + collisionX < 1:
+						self.x = newX
+						return
+					self.x = newCol + 1.0 - collisionY
+					self.y = collisionY + rowBottom
+					self.ground = tile
+					return
+				
+				if tile.inclineType == 'down':
+					if oldCol < newCol: return
+					if collisionY + 1 - collisionX < 1:
+						self.x = newX
+						return
+					self.x = newCol + collisionY + 1.0
+					self.y = collisionY + rowBottom
+					self.ground = tile
+					return
+					
+				raise Exception("Unknown inclineType: '" + str(tile.inclineType) + "'")
 		else:
-			# walking on the ground
-			pass
 		
+			# TODO: need to run the newCol == oldCol code block even if you're walking out of the current column
+			# In which case, you walk all the way up to the edge - epsilon and then modify dx by the amount traversed.
+			
+			#####
+			# walking on the ground
+			#####
+			if newCol == oldCol:
+			
+				# Nothing stopping you if you're in the same X coordinate
+				self.x = newX
+				
+				#####
+				# Moving around on a flat tile and doesn't cross boundaries
+				#####
+				if not self.ground.isIncline:
+					return
+				
+				#####
+				# Moving around on an incline and not crossing boundaries
+				#####
+				ux = self.x % 1.0
+				type = ground.inclineType
+				if ux < 0.01: ux = 0.01
+				elif ux > 0.99: ux = 0.99
+				
+				if type == 'up':
+					self.y = rowBottom + 1 - ux
+					return
+				elif type == 'down':
+					self.y = rowBottom + ux
+					return
+				
+				raise Exception("Unknown inclineType: '" + str(tile.inclineType) + "'")
+			
+			#####
+			# Walking out of bounds?
+			#####
+			if newCol < 0 or newCol >= scene.width:
+				return # Nope
+			
+			currentGround = self.ground
+			newTileColumn = scene.tiles[newCol]
+			
+			cleanConnectTile = None
+			cleanConnectY = currentGround.row # this references the y coordinate, not the nth row, so 4 here means the top of tileColumn[4], just after the bottom of tileColumn[3].
+			# TODO: cleanConnect will have to support half-increments.
+			
+			#####
+			# Check what y coordinate the next column should line up with to make a clean continuous platform connection
+			#####
+			if currentGround.isIncline:
+				type = currentGround.inclineType
+				if type == 'up':
+					cleanConnectY = currentGround.row if newCol > oldCol else (currentGround.row + 1)
+				elif type == 'down':
+					cleanConnectY = (currentGround.row + 1) if newCol > oldCol else currentGround.row
+				else:
+					raise Exception("Unknown incline type: '" + type + "'")
+			else:
+				cleanConnectY = currentGround.row
+			
+			#####
+			# Now look for a tile that connects cleanly
+			#####
+			
+			newGroundCandidate = None
+			if oldCol < newCol: # coming from the left
+				tile = newTileColumn[cleanConnectY - 1]
+				if tile != None and tile.inclineType == 'up':
+					newGroundCandidate = tile
+				else:
+					tile = newTileColumn[cleanConnectY]
+					if not tile.isIncline or tile.inclineType == 'down':
+						newGroundCandidate = tile
+			else:
+				tile = newTileColumn[cleanConnectY - 1]
+				if tile != None and tile.inclineType == 'down':
+					newGroundCandidate = tile
+				else:
+					tile = newTileColumn[cleanConnectY]
+					if not tile.isIncline or tile.inclineType == 'up':
+						newGroundCandidate = tile
+			
+			if newGroundCandidate != None:
+				#####
+				# Adjust newY
+				#####
+				ux = newX % 1.0
+				if ux < 0.01: ux = 0.01
+				elif ux > 0.99: ux = 0.99
+				
+				if newGroundCandidate.isIncline:
+					type = newGroundCandidate.inclineType
+					if type == 'up':
+						newY = newGroundCandidate.row + 1.0 - ux
+					elif type == 'down':
+						newY = newGroundCandidate.row + ux + 0.0
+					else:
+						raise Exception("Unknown incline type: '" + type + "'")
+				else:
+					newY = newGroundCandidate.row + 0.0
+			else:
+				#####
+				# If the player is walking off of a platform, then they will enter freefall mode but keep their current Y value initially.
+				#####
+				newY = self.y
+			
+			newRowBottom = int(newY)
+			newRowTop = int(newY - self.effectiveHeight)
+			row = newRowTop
+			collision = False
+			while row < newRowBottom: # don't check row bottom
+				tile = newTileColumn[row]
+				if tile != None and tile.blocking or tile.isIncline:
+					collision = True
+					break
+				row += 1
+			
+			if not collision:
+				self.ground = newGroundCandidate
+				self.x = newX
+				self.y = newY
+	
+	def updateVerticalGoingUp(self, scene, dy):
+		col = int(self.x)
+		newRow = int(self.y + dy - self.effectiveHeight)
+		if newRow < 0: return # hit the top
+		tile = scene.tiles[col][newRow]
+		if tile != None and (tile.blocking or tile.isIncline):
+			# head bonks the ceiling
+			self.vy = 0.0 # velocity is now 0
+			self.y = tile.row + 1.0 + self.effectiveHeight + 0.001
+			return
+	
+	def updateVerticalGoingDown(self, scene, dy):
+		col = int(self.x)
+		newRow = int(self.y + dy)
+		if newRow >= scene.height:
+			# fell off the bottom
+			# TODO: this will be valid and I'll need to allow this
+			# will likely do something that extends the tiles around the edge to infinity.
+			return
+		
+		tile = scene.tiles[col][newRow]
+		if tile == None or not tile.isBlocking:
+			self.y += self.dy
+			return
+		
+		if not tile.isIncline:
+			self.y = tile.row + 0.0
+			self.ground = tile
+			return
+		
+		type = tile.inclineType
+		ux = self.x % 1.0
+		uy = self.y % 1.0
+		if ux < 0.01: ux = 0.01
+		elif ux > 0.99: ux = 0.99
+		if uy < 0.0: uy = 0.01
+		elif uy > 0.99: uy = 0.99
+		
+		if type == 'up':
+			if ux + uy < 1:
+				self.y += self.dy
+				return
+			self.y = newRow + 1.0 - ux
+		elif type == 'down':
+			if 1 - ux + uy < 1:
+				self.y += self.dy
+				return
+			self.y = newRow + ux
+		else:
+			raise Exception("Unknown incline type: '" + type + "'")
+	
+	def update(self, scene, timeRatio):
+		if self.ground == None:
+			self.vy += GRAVITY
+			self.dy += self.vy
+		else:
+			self.vy = 0
+			self.dy = 0
+		
+		self.dx *= timeRatio
+		self.dy *= timeRatio
+		
+		self.updateImpl(scene)
 	
 	# Note: the collision box of the player for the purposes of movement is actually just a vertical line
-	def update(self, scene, timeRatio):
-		# update horizontal changes
-		if self.dx != 0 or self.dy != 0:
-			dx = self.dx * timeRatio
-			dy = self.dy * timeRatio
-			
-			# guarantee that no vector component is greater than 1 in magnitude by breaking it in half recursively as needed
-			if dx < -1 or dx > 1 or dy < -1 or dy > 1:
-				incrementalDx = self.dx * .5
-				incrementalDy = self.dy * .5
-				i = 0
-				while i < 2:
-					self.dx = incrementalDx
-					self.dy = incrementalDx
-					self.update(scene, timeRatio)
-					i += 1
-				return
-			
-			if self.dx != None:
-				self.updateHorizontal(scene, dx)
+	def updateImpl(self, scene):
+	
+		dx = self.dx
+		dy = self.dy
 		
+		# nothing to do
+		if dx == 0 and dy == 0:
+			return
+		
+		#####
+		# Break the vector into half and call update twice if the vector has a magnitude > 1
+		# This simplifies the physics logic. 
+		# This also works recursively.
+		#####
+		if dx < -1 or dx > 1 or dy < -1 or dy > 1:
+			incrementalDx = self.dx * .5
+			incrementalDy = self.dy * .5
+			i = 0
+			while i < 2:
+				self.dx = incrementalDx
+				self.dy = incrementalDx
+				self.update(scene)
+				i += 1
+			return
+		
+		if dx != 0:
+			self.updateHorizontal(scene, dx)
+			self.dx = 0
+			if self.ground != None:
+				self.vy = 0.0
+				dy = 0
+				
+		if dy != 0:
+			if dy < 0:
+				self.updateVerticalGoingUp(scene, dy)
+			else:
+				self.updateVerticalGoingDown(scene, dy)
+			self.dy = 0
+		
+		if self.ground != None:
+			self.vy = 0
+			
 	
 	def render(self, screen, cameraOffsetX, cameraOffsetY):
 		centerX = self.x * 32 + cameraOffsetX
