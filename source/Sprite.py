@@ -19,7 +19,6 @@ class Sprite:
 	
 	def updateHorizontal(self, scene, dx):
 		
-		self.draggingAgainstWall = False
 		newX = self.x + dx
 		newCol = int(newX)
 		oldCol = int(self.x)
@@ -338,11 +337,13 @@ class Sprite:
 		self.dx *= timeRatio
 		self.dy *= timeRatio
 		
+		self.draggingAgainstWall = False
 		self.updateImpl(scene)
 	
 	# Note: the collision box of the player for the purposes of movement is actually just a vertical line
 	def updateImpl(self, scene):
 	
+		
 		dx = self.dx
 		dy = self.dy
 		
