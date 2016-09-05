@@ -88,25 +88,26 @@ class Sprite:
 			#####
 			if newCol != oldCol:
 				collisionX = newX % 1.0
-				oldColumnTiles = scene.tiles[oldCol]
+				newColumnTiles = scene.tiles[newCol]
 				
 				row = rowTop
 				while row < rowBottom:
 					# any collisions here should be treated as blockers
 					# note that this doesn't check the bottom row
 					
-					tile = oldColumnTiles[row]
+					tile = newColumnTiles[row]
 					if tile != None and tile.blocking:
 						return # Collision
 					
 					row += 1
 				
-				tile = oldColumnTiles[rowBottom]
-				if tile == None:
+				tile = newColumnTiles[rowBottom]
+				if tile == None or not tile.blocking:
 					self.x = newX
 					return
 				
 				if not tile.isIncline:
+					print 'WAT'
 					return # Collision
 				
 				collisionY = self.y % 1.0
