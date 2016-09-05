@@ -107,7 +107,6 @@ class Sprite:
 					return
 				
 				if not tile.isIncline:
-					print 'WAT'
 					return # Collision
 				
 				collisionY = self.y % 1.0
@@ -277,6 +276,7 @@ class Sprite:
 	
 	def updateVerticalGoingDown(self, scene, dy):
 		col = int(self.x)
+		oldRow = int(self.y)
 		newRow = int(self.y + dy)
 		if newRow >= scene.height:
 			# fell off the bottom
@@ -284,7 +284,12 @@ class Sprite:
 			# will likely do something that extends the tiles around the edge to infinity.
 			return
 		
-		tile = scene.tiles[col][newRow]
+		columnTiles = scene.tiles[col]
+		
+		tile = columnTiles[oldRow]
+		if tile == None or not tile.blocking:
+			tile = columnTiles[newRow]
+		
 		if tile == None or not tile.blocking:
 			self.y += self.dy
 			return
@@ -292,6 +297,7 @@ class Sprite:
 		if not tile.isIncline:
 			self.y = tile.row + 0.0
 			self.ground = tile
+			self.vy = 0
 			return
 		
 		type = tile.inclineType
@@ -299,21 +305,21 @@ class Sprite:
 		uy = self.y % 1.0
 		if ux < 0.01: ux = 0.01
 		elif ux > 0.99: ux = 0.99
-		if uy < 0.0: uy = 0.01
-		elif uy > 0.99: uy = 0.99
 		
+		newY = self.y + dy
 		if type == 'up':
-			if ux + uy < 1:
-				self.y += self.dy
-				return
-			self.y = newRow + 1.0 - ux
+			inclineY = tile.row + 1 - ux
 		elif type == 'down':
-			if 1 - ux + uy < 1:
-				self.y += self.dy
-				return
-			self.y = newRow + ux
+			inclineY = tile.row + ux
 		else:
 			raise Exception("Unknown incline type: '" + type + "'")
+		
+		if newY > inclineY:
+			self.y = inclineY
+			self.ground = tile
+			self.vy = 0
+		else:
+			self.y = newY
 	
 	def update(self, scene, timeRatio):
 		if self.ground == None:
