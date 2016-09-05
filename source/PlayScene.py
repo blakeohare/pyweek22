@@ -31,16 +31,13 @@ class PlayScene:
 		
 		movementVector = InputManager.getDirectionVector()
 		player.dx = movementVector[0] * PLAYER_WALK_VELOCITY
-		if player.ground != None:
-			
-			if InputManager.jumpPressed:
-				if InputManager.jumpPressedThisFrame:
-					player.ground = None
-					player.y -= .001
-					player.vy = PLAYER_JUMP_VELOCITY
-		else:
-			if InputManager.jumpReleasedThisFrame:
-				player.vy *= .3
+		if InputManager.jumpPressed and (player.ground != None or player.draggingAgainstWall):
+			if InputManager.jumpPressedThisFrame:
+				player.ground = None
+				player.y -= .001
+				player.vy = PLAYER_JUMP_VELOCITY
+		elif InputManager.jumpReleasedThisFrame and player.ground == None and player.vy < 0:
+			player.vy *= .3
 		
 		dt = 1.0 # TODO: update for bullet time
 		for sprite in self.sprites:

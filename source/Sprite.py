@@ -15,8 +15,11 @@ class Sprite:
 		self.visualHeight = 1.0
 		self.effectiveHeight = .75
 		self.rowCollisionCache = None
+		self.draggingAgainstWall = False
 	
 	def updateHorizontal(self, scene, dx):
+		
+		self.draggingAgainstWall = False
 		newX = self.x + dx
 		newCol = int(newX)
 		oldCol = int(self.x)
@@ -98,6 +101,7 @@ class Sprite:
 					
 					tile = newColumnTiles[row]
 					if tile != None and tile.blocking:
+						self.draggingAgainstWall = True
 						return # Collision
 					
 					row += 1
@@ -108,6 +112,7 @@ class Sprite:
 					return
 				
 				if not tile.isIncline:
+					self.draggingAgainstWall = True
 					return # Collision
 				
 				collisionY = self.y % 1.0
@@ -362,6 +367,15 @@ class Sprite:
 			return
 		if dx != 0:
 			self.updateHorizontal(scene, dx)
+			if self.draggingAgainstWall:
+				if dy <= 0: 
+					# moving up or stationary so not really dragging against it
+					self.draggingAgainstWall = False
+				else:
+					# slow down descent
+					if dy > .03:
+						dy = .03
+						self.vy = 0.03
 			self.dx = 0
 			if self.ground != None:
 				self.vy = 0.0
