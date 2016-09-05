@@ -1,4 +1,3 @@
-GRAVITY = .01
 
 ROW_COLLISION_CACHE = [False] * 1000
 
@@ -23,7 +22,7 @@ class Sprite:
 		rowBottom = int(self.y)
 		rowTop = int(self.y - self.effectiveHeight)
 		
-		if (self.ground == None):
+		if self.ground == None:
 			# flying horizontally through the air
 			
 			#####
@@ -61,7 +60,29 @@ class Sprite:
 						return
 				else:
 					raise Exception("Somehow managed to move to a tile that isn't an incline")
-			
+			else:
+				#####
+				# You are flying through the air.
+				# Go ahead and move as far as you can within this same column.
+				#####
+				
+				if newCol == oldCol:
+					# move all the way to the destination.
+					self.x += dx
+				else:
+					# move as far as you can within this single column.
+					originalX = self.x
+					if newCol > oldCol:
+						# moving to the right.
+						newPartialX = oldCol + .99
+					else:
+						# moving to the left
+						newPartialX = oldCol + 0.01
+					# take away the amount that you moved from dx and continue on
+					diff = newPartialX - self.x
+					dx -= diff
+					self.x = newPartialX
+				
 			#####
 			# Continue through to the next tile if applicable
 			#####
@@ -90,10 +111,11 @@ class Sprite:
 				
 				collisionY = self.y % 1.0
 				if collisionY < 0.01: collisionY = 0.01
-				elif collision > 0.99: collisionY = 0.99
+				elif collisionY > 0.99: collisionY = 0.99
 				
 				if tile.inclineType == 'up':
-					if oldCol > newCol: return
+					if oldCol > newCol:
+						return
 					if collisionY + collisionX < 1:
 						self.x = newX
 						return
@@ -103,7 +125,8 @@ class Sprite:
 					return
 				
 				if tile.inclineType == 'down':
-					if oldCol < newCol: return
+					if oldCol < newCol:
+						return
 					if collisionY + 1 - collisionX < 1:
 						self.x = newX
 						return
@@ -113,8 +136,8 @@ class Sprite:
 					return
 					
 				raise Exception("Unknown inclineType: '" + str(tile.inclineType) + "'")
+
 		else:
-		
 			# TODO: need to run the newCol == oldCol code block even if you're walking out of the current column
 			# In which case, you walk all the way up to the edge - epsilon and then modify dx by the amount traversed.
 			
@@ -187,7 +210,7 @@ class Sprite:
 					newGroundCandidate = tile
 				else:
 					tile = newTileColumn[cleanConnectY]
-					if not tile.isIncline or tile.inclineType == 'down':
+					if tile != None and (not tile.isIncline or tile.inclineType == 'down'):
 						newGroundCandidate = tile
 			else:
 				tile = newTileColumn[cleanConnectY - 1]
@@ -195,7 +218,7 @@ class Sprite:
 					newGroundCandidate = tile
 				else:
 					tile = newTileColumn[cleanConnectY]
-					if not tile.isIncline or tile.inclineType == 'up':
+					if tile != None and (not tile.isIncline or tile.inclineType == 'up'):
 						newGroundCandidate = tile
 			
 			if newGroundCandidate != None:
@@ -248,6 +271,8 @@ class Sprite:
 			self.vy = 0.0 # velocity is now 0
 			self.y = tile.row + 1.0 + self.effectiveHeight + 0.001
 			return
+		
+		self.y += dy
 	
 	def updateVerticalGoingDown(self, scene, dy):
 		col = int(self.x)
@@ -324,10 +349,9 @@ class Sprite:
 			while i < 2:
 				self.dx = incrementalDx
 				self.dy = incrementalDx
-				self.update(scene)
+				self.updateImpl(scene)
 				i += 1
 			return
-		
 		if dx != 0:
 			self.updateHorizontal(scene, dx)
 			self.dx = 0

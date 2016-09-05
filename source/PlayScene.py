@@ -36,7 +36,7 @@ class PlayScene:
 			
 			if InputManager.jumpPressed:
 				player.ground = None
-				player.vy = -.15
+				player.vy = -.5
 				player.y -= .001
 		
 		dt = 1.0 # TODO: update for bullet time
