@@ -65,6 +65,8 @@ class PlayScene:
 		for sprite in self.sprites:
 			sprite.update(self, dt)
 		
+		if InputManager.escapePressed:
+			self._next = OptionsMenu(self)
 		
 	def render(self, screen):
 		
@@ -88,6 +90,8 @@ class PlayScene:
 		
 		self.renderTiles(screen, cameraOffsetX, cameraOffsetY, rt)
 		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY)
+		
+		TextRenderer.render(screen, "Hello, World!", 100, 100)
 	
 	def renderTiles(self, screen, cameraOffsetX, cameraOffsetY, rt):
 		

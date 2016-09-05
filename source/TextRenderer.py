@@ -60,6 +60,8 @@ class TextRenderer_:
 				x += self.spaceWidth
 			else:
 				img = imagesGet(c)
+				if img == None:
+					img = imagesGet('?')
 				screen.blit(img, (x, y))
 				x += img.get_width()
 		
