@@ -34,13 +34,15 @@ class PlayScene:
 		xMovement = movementVector[0]
 		vx = player.vx
 		if player.ground == None:
-			vx += xMovement * PLAYER_WALK_ACCELERATION / 2
+			vx += xMovement * PLAYER_WALK_ACCELERATION * 0.8
 		else:
 			vx += xMovement * PLAYER_WALK_ACCELERATION
 		if vx < -0.2: vx = -0.2
 		elif vx > 0.2: vx = 0.2
-		if xMovement == 0 and player.ground != None:
-			vx *= 0.84
+		
+		slowdownRatio = 0.84 if player.ground != None else 0.5
+		if xMovement == 0:
+			vx *= slowdownRatio
 			if vx < 0.01 and vx > -0.01:
 				vx = 0 
 		player.vx = vx
@@ -50,7 +52,12 @@ class PlayScene:
 				player.ground = None
 				player.y -= .001
 				player.vy = PLAYER_JUMP_VELOCITY
+				
+				if player.draggingAgainstWall:
+					player.vx = (PLAYER_WALK_ACCELERATION * 4) * (-1 if player.x % 1 > .5 else 1)
+				
 				player.dx = 0
+				
 		elif InputManager.jumpReleasedThisFrame and player.ground == None and player.vy < 0:
 			player.vy *= .3
 		
