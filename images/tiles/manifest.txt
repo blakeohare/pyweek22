@@ -11,3 +11,5 @@
 # a period (.) is an empty space
 
 x	-	block
+/	/	block-incline-up
+\	\	block-incline-down

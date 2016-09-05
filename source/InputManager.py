@@ -16,9 +16,6 @@ class InputManager_:
 		while len(self.menuEventQueue) > 0:
 			self.menuEventQueue.pop()
 	
-		while len(self.gameplayEventQueue) > 0:
-			self.gameplayEventQueue.pop()
-		
 		self.quitAttempted = False
 		
 		for event in events:
@@ -49,6 +46,14 @@ class InputManager_:
 					self.magicJumpPressed = down
 			elif event.type == pygame.QUIT:
 				self.quitAttempted = True
+		
+		pressed = self.systemKeysPressed
+		leftPressed = pressed.get(pygame.K_a, False)
+		rightPressed = pressed.get(pygame.K_d, False)
+		upPressed = pressed.get(pygame.K_w, False)
+		downPressed = pressed.get(pygame.K_s, False)
+		self.keyboardMoveVector[0] = -1 if leftPressed else 1 if rightPressed else 0
+		self.keyboardMoveVector[1] = -1 if upPressed else 1 if downPressed else 0
 		
 	def getMenuEvents(self):
 		return self.menuEventQueue

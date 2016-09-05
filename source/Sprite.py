@@ -8,8 +8,8 @@ class Sprite:
 		self.x = x + 0.0
 		self.y = y + 0.0
 		self.template = template
-		self.dx = None
-		self.dy = None
+		self.dx = 0
+		self.dy = 0
 		self.vy = 0.0
 		self.ground = None
 		self.visualHeight = 1.0
@@ -48,7 +48,7 @@ class Sprite:
 						if collisionX < 0.01: collisionX = .01
 						self.ground = bottomTile
 						self.x = oldCol + collisionX + 0.0
-						self.y = rowBottom + 1.0 - self.collisionX
+						self.y = rowBottom + 1.0 - collisionX
 						return
 				elif inclineType == 'down':
 					if 1 - collisionX + collisionY >= 1.0:
@@ -57,7 +57,7 @@ class Sprite:
 						if collisionX < 0.01: collisionX = .01
 						self.ground = bottomTile
 						self.x = oldCol + collisionX + 0.0
-						self.y = rowBottom + self.collisionX + 0.0
+						self.y = rowBottom + collisionX + 0.0
 						return
 				else:
 					raise Exception("Somehow managed to move to a tile that isn't an incline")
@@ -136,7 +136,7 @@ class Sprite:
 				# Moving around on an incline and not crossing boundaries
 				#####
 				ux = self.x % 1.0
-				type = ground.inclineType
+				type = self.ground.inclineType
 				if ux < 0.01: ux = 0.01
 				elif ux > 0.99: ux = 0.99
 				
@@ -228,7 +228,7 @@ class Sprite:
 			collision = False
 			while row < newRowBottom: # don't check row bottom
 				tile = newTileColumn[row]
-				if tile != None and tile.blocking or tile.isIncline:
+				if tile != None and (tile.blocking or tile.isIncline):
 					collision = True
 					break
 				row += 1
@@ -259,7 +259,7 @@ class Sprite:
 			return
 		
 		tile = scene.tiles[col][newRow]
-		if tile == None or not tile.isBlocking:
+		if tile == None or not tile.blocking:
 			self.y += self.dy
 			return
 		

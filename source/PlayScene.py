@@ -30,13 +30,14 @@ class PlayScene:
 		playerPos = (player.x, player.y)
 		
 		movementVector = InputManager.getDirectionVector()
-		
-		if player.ground:
-			player.dx = movementVector[0]
+		v = .2
+		player.dx = movementVector[0] * v
+		if player.ground != None:
 			
 			if InputManager.jumpPressed:
 				player.ground = None
 				player.vy = -.15
+				player.y -= .001
 		
 		dt = 1.0 # TODO: update for bullet time
 		for sprite in self.sprites:
