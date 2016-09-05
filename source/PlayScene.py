@@ -36,6 +36,7 @@ class PlayScene:
 				player.ground = None
 				player.y -= .001
 				player.vy = PLAYER_JUMP_VELOCITY
+				player.dx = 0
 		elif InputManager.jumpReleasedThisFrame and player.ground == None and player.vy < 0:
 			player.vy *= .3
 		
