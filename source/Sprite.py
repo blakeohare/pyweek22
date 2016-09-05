@@ -1,5 +1,6 @@
 
 ROW_COLLISION_CACHE = [False] * 1000
+PLAYER_JUMP_VELOCITY = -0.4
 
 class Sprite:
 	def __init__(self, template, x, y):

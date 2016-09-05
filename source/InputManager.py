@@ -8,6 +8,8 @@ class InputManager_:
 		self.keyboardMoveVector = [0.0, 0.0]
 		self.useKeyboard = True
 		self.jumpPressed = False
+		self.jumpPressedThisFrame = False
+		self.jumpReleasedThisFrame = False
 		self.magicJumpPressed = False
 		self.systemKeysPressed = {}
 	
@@ -17,6 +19,8 @@ class InputManager_:
 			self.menuEventQueue.pop()
 	
 		self.quitAttempted = False
+		self.jumpPressedThisFrame = False
+		self.jumpReleasedThisFrame = False
 		
 		for event in events:
 			if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
@@ -42,6 +46,9 @@ class InputManager_:
 				elif k == pygame.K_SPACE:
 					if down: self.menuEventQueue.append('enter')
 					self.jumpPressed = down
+					self.jumpPressedThisFrame = down
+					if not down:
+						self.jumpReleasedThisFrame = True
 				elif k == pygame.K_f:
 					self.magicJumpPressed = down
 			elif event.type == pygame.QUIT:
