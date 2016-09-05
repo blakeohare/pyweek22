@@ -29,8 +29,22 @@ class PlayScene:
 		player = self.player
 		playerPos = (player.x, player.y)
 		
+		# Apply horizontal movement and inertia
 		movementVector = InputManager.getDirectionVector()
-		player.dx = movementVector[0] * PLAYER_WALK_VELOCITY
+		xMovement = movementVector[0]
+		vx = player.vx
+		if player.ground == None:
+			vx += xMovement * PLAYER_WALK_ACCELERATION / 2
+		else:
+			vx += xMovement * PLAYER_WALK_ACCELERATION
+		if vx < -0.2: vx = -0.2
+		elif vx > 0.2: vx = 0.2
+		if xMovement == 0 and player.ground != None:
+			vx *= 0.84
+			if vx < 0.01 and vx > -0.01:
+				vx = 0 
+		player.vx = vx
+		
 		if InputManager.jumpPressed and (player.ground != None or player.draggingAgainstWall):
 			if InputManager.jumpPressedThisFrame:
 				player.ground = None

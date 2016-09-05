@@ -10,6 +10,7 @@ class Sprite:
 		self.template = template
 		self.dx = 0
 		self.dy = 0
+		self.vx = 0.0
 		self.vy = 0.0
 		self.ground = None
 		self.visualHeight = 1.0
@@ -101,6 +102,7 @@ class Sprite:
 					tile = newColumnTiles[row]
 					if tile != None and tile.blocking:
 						self.draggingAgainstWall = True
+						self.vx = 0
 						return # Collision
 					
 					row += 1
@@ -112,6 +114,7 @@ class Sprite:
 				
 				if not tile.isIncline:
 					self.draggingAgainstWall = True
+					self.vx = 0
 					return # Collision
 				
 				collisionY = self.y % 1.0
@@ -120,9 +123,11 @@ class Sprite:
 				
 				if tile.inclineType == 'up':
 					if oldCol > newCol:
+						self.vx = 0
 						return
 					if collisionY + collisionX < 1:
 						self.x = newX
+						self.vx = 0
 						return
 					self.x = newCol + 1.0 - collisionY
 					self.y = collisionY + rowBottom
@@ -131,9 +136,11 @@ class Sprite:
 				
 				if tile.inclineType == 'down':
 					if oldCol < newCol:
+						self.vx = 0
 						return
 					if collisionY + 1 - collisionX < 1:
 						self.x = newX
+						self.vx = 0
 						return
 					self.x = newCol + collisionY + 1.0
 					self.y = collisionY + rowBottom
@@ -181,6 +188,7 @@ class Sprite:
 			# Walking out of bounds?
 			#####
 			if newCol < 0 or newCol >= scene.width:
+				self.vx = 0
 				return # Nope
 			
 			currentGround = self.ground
@@ -258,6 +266,7 @@ class Sprite:
 				tile = newTileColumn[row]
 				if tile != None and (tile.blocking or tile.isIncline):
 					collision = True
+					self.vx = 0
 					break
 				row += 1
 			
@@ -333,6 +342,9 @@ class Sprite:
 		else:
 			self.vy = 0
 			self.dy = 0
+		
+		self.dx += self.vx
+			
 		
 		self.dx *= timeRatio
 		self.dy *= timeRatio
