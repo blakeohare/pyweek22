@@ -296,7 +296,7 @@ class Sprite:
 			tile = columnTiles[newRow]
 		
 		if tile == None or not tile.blocking:
-			self.y += self.dy
+			self.y += dy
 			return
 		
 		if not tile.isIncline:
