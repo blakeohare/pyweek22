@@ -44,8 +44,6 @@ class JoystickWrapper:
 					self.configMapping[-1][action] = config
 					self.alreadyConfigured = True # called redundantly, but want to make sure it's only invoked for non-empty files.
 		
-		print(self.configMapping[-1])
-		
 	def pushCleanConfig(self):
 		self.configMapping.append({})
 		self.taken.append({})

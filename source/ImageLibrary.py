@@ -22,7 +22,11 @@ class ImageLibrary_:
 				if self.images.get(rpath) == None:
 					self.images[rpath.replace('\\', '/')] = img
 				img = pygame.transform.flip(img, True, False)
-			self.images[path] = img
+			newSurf = pygame.Surface(img.get_size()).convert()
+			newSurf.fill((255, 0, 255))
+			newSurf.blit(img, (0, 0))
+			newSurf.set_colorkey((255, 0, 255))
+			self.images[path] = newSurf
 		return img
 	
 	def getAtScale(self, path, scale):
@@ -37,7 +41,8 @@ class ImageLibrary_:
 			width, height = img.get_size()
 			width = int(width * scale)
 			height = int(height * scale)
-			img = pygame.transform.scale(img, (width, height))
+			img = pygame.transform.scale(img, (width, height)).convert()
+			img.set_colorkey((255, 0, 255))
 			lookup[path] = img
 		
 		return img

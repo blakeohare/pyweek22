@@ -17,6 +17,7 @@ class Sprite:
 		self.effectiveHeight = self.visualHeight - .25
 		self.rowCollisionCache = None
 		self.draggingAgainstWall = False
+		self.lastDir = 'east'
 	
 	def updateHorizontal(self, scene, dx):
 		
@@ -405,14 +406,21 @@ class Sprite:
 			self.vy = 0
 			
 	
-	def render(self, screen, cameraOffsetX, cameraOffsetY):
+	def render(self, screen, cameraOffsetX, cameraOffsetY, rtInt):
 		centerX = self.x * 32 + cameraOffsetX
 		bottomY = self.y * 32 + cameraOffsetY
 		left = int(centerX - 16)
 		top = int(bottomY - 32)
-		img = ImageLibrary.getAtScale('sprites/player/stand-east-1.png', 4)
+		
+		if self.vx == 0:
+			dir = self.lastDir
+		else:
+			dir = 'east' if self.vx > 0 else 'west'
+			self.lastDir = dir
+		num = int((rtInt % 3) + 1)
+		path = 'sprites/player/stand-' + dir + '-' + str(num) + '.png'
+		img = ImageLibrary.getAtScale(path, 4)
 		left = int(centerX - img.get_width() // 2)
 		top = int(bottomY - img.get_height())
 		screen.blit(img, (left, top))
-		#pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(left, top, 32, 32))
 		

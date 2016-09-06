@@ -70,6 +70,8 @@ class PlayScene:
 		
 	def render(self, screen):
 		
+		screen.fill((10, 40, 80))
+		
 		newRtLast = time.time()
 		diff = time.time() - self.rtLast # how long has passed since the last frame?
 		# TODO: adjust diff for bullet-time to slow down animations
@@ -89,7 +91,7 @@ class PlayScene:
 		cameraOffsetY = int((-self.cameraY) * 32 + SCREEN_HEIGHT // 2)
 		
 		self.renderTiles(screen, cameraOffsetX, cameraOffsetY, rt)
-		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY)
+		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY, rt)
 		
 	def renderTiles(self, screen, cameraOffsetX, cameraOffsetY, rt):
 		
@@ -107,7 +109,9 @@ class PlayScene:
 				px += 32
 			py += 32		
 	
-	def renderSprites(self, screen, sprites, cameraOffsetX, cameraOffsetY):
+	def renderSprites(self, screen, sprites, cameraOffsetX, cameraOffsetY, rt):
+		ert = int(rt * 60 / 8)
+		
 		for sprite in sprites:
-			sprite.render(screen, cameraOffsetX, cameraOffsetY)
+			sprite.render(screen, cameraOffsetX, cameraOffsetY, ert)
 	
