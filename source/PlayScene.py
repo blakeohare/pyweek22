@@ -62,9 +62,13 @@ class PlayScene:
 		elif InputManager.jumpReleasedThisFrame and player.ground == None and player.vy < 0:
 			player.vy *= .3
 		
+		newSprites = []
 		dt = 1.0 # TODO: update for bullet time
 		for sprite in self.sprites:
 			sprite.update(self, dt)
+			if not sprite.dead:
+				newSprites.append(sprite)
+		self.sprites = newSprites
 		
 		if InputManager.escapePressed:
 			self._next = OptionsMenu(self)

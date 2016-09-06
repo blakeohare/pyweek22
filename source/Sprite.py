@@ -367,11 +367,12 @@ class Sprite:
 		
 		if self.dustCounter < 0:
 			if self.ground != None and ((self.forceAppliedX < 0) != (self.vx < 0)) and abs(self.forceAppliedX) > .2:
-				self.dustCounter = 0
-				dust = Debris(self.x, self.y, (128, 128, 128), 'grow-and-fade')
-				scene.sprites.append(dust)
-				dust.vx = self.vx / 10.0
-				dust.vy = -0.03
+				self.dustCounter = 5
+				for i in range(3):
+					dust = Debris(self.x, self.y, (128, 128, 128), 'grow-and-fade')
+					scene.sprites.append(dust)
+					dust.vx = self.vx / 10.0 + random.random() * 0.03 - 0.015
+					dust.vy = -0.02 + random.random() * 0.02
 		else:
 			self.dustCounter -= 1
 			
@@ -416,7 +417,18 @@ class Sprite:
 		
 		if self.ground != None:
 			self.vy = 0
-			
+		
+		if self.draggingAgainstWall and self.dustCounter < 0:
+			self.dustCounter = 9
+			x = self.x
+			if self.x % 1.0 < .5:
+				x -= .35
+			else:
+				x += .35
+			dust = Debris(x, self.y - 1.7, (128, 128, 128), 'grow-and-fade')
+			scene.sprites.append(dust)
+			dust.vy = -0.03 + 0.015 * random.random()
+			dust.vx = -0.01 + 0.02 * random.random()
 	
 	def render(self, screen, cameraOffsetX, cameraOffsetY, rtInt):
 		
