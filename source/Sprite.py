@@ -96,6 +96,8 @@ class Sprite:
 			# Continue through to the next tile if applicable
 			#####
 			if newCol != oldCol:
+				if newCol >= scene.width:
+					return
 				collisionX = newX % 1.0
 				newColumnTiles = scene.tiles[newCol]
 				

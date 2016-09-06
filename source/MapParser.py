@@ -45,7 +45,7 @@ class MapParser:
 					tile = Tile(TileStore.get(id), x, y)
 				tiles[x][y] = tile
 		
-		tempStartDoor = Door('start', 2, height - 2)
+		tempStartDoor = Door('start', 2, 8)
 		doors[tempStartDoor.id] = tempStartDoor
 		doorStartId = tempStartDoor.id
 		return {

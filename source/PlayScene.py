@@ -95,6 +95,13 @@ class PlayScene:
 		cameraOffsetX = int((-self.cameraX) * 32 + SCREEN_WIDTH // 2)
 		cameraOffsetY = int((-self.cameraY) * 32 + SCREEN_HEIGHT // 2)
 		
+		cameraOffsetXBound = -(self.width * 32 - SCREEN_WIDTH)
+		if cameraOffsetX > 0: cameraOffsetX = 0
+		elif cameraOffsetX < cameraOffsetXBound: cameraOffsetX = cameraOffsetXBound
+		cameraOffsetYBound = -(self.height * 32 - SCREEN_HEIGHT)
+		if cameraOffsetY > 0: cameraOffsetY = 0
+		elif cameraOffsetY < cameraOffsetYBound: cameraOffsetY = cameraOffsetYBound
+		
 		self.renderTiles(screen, cameraOffsetX, cameraOffsetY, rt)
 		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY, rt)
 		
