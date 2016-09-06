@@ -32,6 +32,7 @@ class PlayScene:
 		# Apply horizontal movement and inertia
 		movementVector = InputManager.getDirectionVector()
 		xMovement = movementVector[0]
+		player.forceAppliedX = xMovement
 		vx = player.vx
 		if player.ground == None:
 			vx += xMovement * PLAYER_WALK_ACCELERATION * 0.8

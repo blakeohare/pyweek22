@@ -18,6 +18,9 @@ class Sprite:
 		self.rowCollisionCache = None
 		self.draggingAgainstWall = False
 		self.lastDir = 'east'
+		self.dead = False
+		self.dustCounter = -1
+		self.forceAppliedX = 0.0
 	
 	def updateHorizontal(self, scene, dx):
 		
@@ -355,14 +358,23 @@ class Sprite:
 	
 	# Note: the collision box of the player for the purposes of movement is actually just a vertical line
 	def updateImpl(self, scene):
-	
-		
 		dx = self.dx
 		dy = self.dy
 		
 		# nothing to do
 		if dx == 0 and dy == 0:
 			return
+		
+		if self.dustCounter < 0:
+			if self.ground != None and ((self.forceAppliedX < 0) != (self.vx < 0)) and abs(self.forceAppliedX) > .2:
+				self.dustCounter = 0
+				dust = Debris(self.x, self.y, (128, 128, 128), 'grow-and-fade')
+				scene.sprites.append(dust)
+				dust.vx = self.vx / 10.0
+				dust.vy = -0.03
+		else:
+			self.dustCounter -= 1
+			
 		
 		#####
 		# Break the vector into half and call update twice if the vector has a magnitude > 1
