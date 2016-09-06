@@ -48,14 +48,17 @@ class PlayScene:
 				vx = 0 
 		player.vx = vx
 		
-		if InputManager.jumpPressed and (player.ground != None or player.draggingAgainstWall):
+		if InputManager.jumpPressed and (player.ground != None or player.lastWallDragWasNFramesAgo < 8):
 			if InputManager.jumpPressedThisFrame:
+				if player.ground != None:
+					player.vy = PLAYER_JUMP_VELOCITY
+				else: # wall drag
+					player.vy = PLAYER_WALLJUMP_VELOCITY_Y
+				
 				player.ground = None
 				player.y -= .001
-				player.vy = PLAYER_JUMP_VELOCITY
-				
 				if player.draggingAgainstWall:
-					player.vx = (PLAYER_WALK_ACCELERATION * 4) * (-1 if player.x % 1 > .5 else 1)
+					player.vx = (PLAYER_WALK_ACCELERATION * 6) * (-1 if player.x % 1 > .5 else 1)
 				
 				player.dx = 0
 				

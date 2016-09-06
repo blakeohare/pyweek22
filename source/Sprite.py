@@ -21,6 +21,7 @@ class Sprite:
 		self.dead = False
 		self.dustCounter = -1
 		self.forceAppliedX = 0.0
+		self.lastWallDragWasNFramesAgo = 99999
 	
 	def updateHorizontal(self, scene, dx):
 		
@@ -421,17 +422,22 @@ class Sprite:
 		if self.ground != None:
 			self.vy = 0
 		
-		if self.draggingAgainstWall and self.dustCounter < 0:
-			self.dustCounter = 9
-			x = self.x
-			if self.x % 1.0 < .5:
-				x -= .35
-			else:
-				x += .35
-			dust = Debris(x, self.y - 1.7, (128, 128, 128), 'grow-and-fade')
-			scene.sprites.append(dust)
-			dust.vy = -0.03 + 0.015 * random.random()
-			dust.vx = -0.01 + 0.02 * random.random()
+		if self.draggingAgainstWall:
+			self.lastWallDragWasNFramesAgo = 0
+			if self.dustCounter < 0:
+				self.dustCounter = 9
+				x = self.x
+				if self.x % 1.0 < .5:
+					x -= .35
+				else:
+					x += .35
+				dust = Debris(x, self.y - 1.7, (128, 128, 128), 'grow-and-fade')
+				scene.sprites.append(dust)
+				dust.vy = -0.03 + 0.015 * random.random()
+				dust.vx = -0.01 + 0.02 * random.random()
+		else:
+			self.lastWallDragWasNFramesAgo += 1
+		
 	
 	def render(self, screen, cameraOffsetX, cameraOffsetY, rtInt):
 		
