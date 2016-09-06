@@ -3,6 +3,7 @@
 # - tile ID
 # - flags
 #   P  passthrough
+#	B  bar platform (can jump up through it but not down. Does not block from sides.
 #	-  nothing
 #   /  incline up
 #   \  incline down
@@ -15,3 +16,4 @@ x	-	block
 \	\	block-incline-down
 d	-	nature/dirt
 g	-	nature/grass
+-	B	town/woodbar

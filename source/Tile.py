@@ -5,6 +5,7 @@ class Tile:
 		self.col = col
 		self.row = row
 		self.blocking = template.blocking
+		self.bar = template.bar
 		self.isIncline = template.isIncline
 		self.inclineType = template.inclineType
 		self.staticImage = self.images[0]

@@ -46,7 +46,8 @@ class Sprite:
 			collisionY = (self.y) % 1.0
 			
 			bottomTile = oldColumnTiles[rowBottom]
-			if bottomTile != None:
+			passable = bottomTile == None or not bottomTile.blocking or bottomTile.bar
+			if not passable:
 				inclineType = bottomTile.inclineType
 				if inclineType == 'up':
 					if collisionX + collisionY >= 1.0:
@@ -305,10 +306,10 @@ class Sprite:
 		columnTiles = scene.tiles[col]
 		
 		tile = columnTiles[oldRow]
-		if tile == None or not tile.blocking:
+		if tile == None or (not tile.blocking and not tile.bar):
 			tile = columnTiles[newRow]
 		
-		if tile == None or not tile.blocking:
+		if tile == None or (not tile.blocking and not tile.bar):
 			self.y += dy
 			return
 		
