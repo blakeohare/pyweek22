@@ -419,20 +419,33 @@ class Sprite:
 			
 	
 	def render(self, screen, cameraOffsetX, cameraOffsetY, rtInt):
-		centerX = self.x * 32 + cameraOffsetX
-		bottomY = self.y * 32 + cameraOffsetY
-		left = int(centerX - 16)
-		top = int(bottomY - 32)
 		
+		# TODO: maybe this should go in update?
 		if self.vx == 0:
 			dir = self.lastDir
 		else:
 			dir = 'east' if self.vx > 0 else 'west'
 			self.lastDir = dir
-		num = int((rtInt % 3) + 1)
-		path = 'sprites/player/stand-' + dir + '-' + str(num) + '.png'
-		img = ImageLibrary.getAtScale(path, 4)
-		left = int(centerX - img.get_width() // 2)
-		top = int(bottomY - img.get_height())
+			
+		centerX = self.x * 32 + cameraOffsetX
+		bottomY = self.y * 32 + cameraOffsetY
+		xOffset = 0
+		yOffset = 0
+		if self.draggingAgainstWall:
+			if self.x % 1.0 < .5:
+				dir = 'east'
+				xOffset = 8
+			else:
+				dir = 'west'
+				xOffset = -8
+			
+			path = 'sprites/player/walldrag-' + dir + '-1.png'
+		else:
+			num = int((rtInt % 3) + 1)
+			path = 'sprites/player/stand-' + dir + '-' + str(num) + '.png'
+		
+		img = ImageLibrary.getAtScale(path, 4)	
+		left = int(centerX - img.get_width() // 2 + xOffset)
+		top = int(bottomY - img.get_height() + yOffset)
 		screen.blit(img, (left, top))
 		
