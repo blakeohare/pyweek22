@@ -13,8 +13,8 @@ class Sprite:
 		self.vx = 0.0
 		self.vy = 0.0
 		self.ground = None
-		self.visualHeight = 1.0
-		self.effectiveHeight = .75
+		self.visualHeight = 2.0
+		self.effectiveHeight = self.visualHeight - .25
 		self.rowCollisionCache = None
 		self.draggingAgainstWall = False
 	
@@ -410,4 +410,9 @@ class Sprite:
 		bottomY = self.y * 32 + cameraOffsetY
 		left = int(centerX - 16)
 		top = int(bottomY - 32)
-		pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(left, top, 32, 32))
+		img = ImageLibrary.getAtScale('sprites/player/stand-east-1.png', 4)
+		left = int(centerX - img.get_width() // 2)
+		top = int(bottomY - img.get_height())
+		screen.blit(img, (left, top))
+		#pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(left, top, 32, 32))
+		

@@ -3,10 +3,25 @@ class ImageLibrary_:
 		self.images = {}
 		self.imagesByScale = {}
 	
+	# TODO: colorkey magic
 	def get(self, path):
 		img = self.images.get(path)
 		if img == None:
-			img = pygame.image.load(('images/' + path).replace('/', os.sep))
+			rpath = ('images/' + path).replace('/', os.sep)
+			reverse = False
+			if '-east' in rpath or '-west' in rpath:
+				if not os.path.exists(rpath):
+					if '-east' in path:
+						rpath = rpath.replace('-east', '-west')
+					else:
+						rpath = rpath.replace('-west', '-east')
+					reverse = True
+				
+			img = pygame.image.load(rpath)
+			if reverse:
+				if self.images.get(rpath) == None:
+					self.images[rpath.replace('\\', '/')] = img
+				img = pygame.transform.flip(img, True, False)
 			self.images[path] = img
 		return img
 	
