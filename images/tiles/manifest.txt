@@ -13,3 +13,5 @@
 x	-	block
 /	/	block-incline-up
 \	\	block-incline-down
+d	-	nature/dirt
+g	-	nature/grass
