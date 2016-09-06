@@ -14,6 +14,7 @@ def readTextResource(path):
 	return text
 
 def readTextResourceLines(path):
+	path = path.replace('/', os.sep)
 	output = []
 	for line in readTextResource(path).split('\n'):
 		line = line.strip()
@@ -21,6 +22,22 @@ def readTextResourceLines(path):
 			output.append(line)
 	return output
 
+def writeTextFile(filename, content):
+	filename = filename.replace('/', os.sep)
+	c = open(filename, 'wt')
+	c.write(content)
+	c.close()
+
+def readFileMaybe(filename):
+	filename = filename.replace('/', os.sep)
+	if not os.path.exists(filename): return None
+	if os.path.isdir(filename): return None
+	c = open(filename, 'rt')
+	text = c.read()
+	c.close()
+	return text
+		
+	
 _tempRect = [None]
 def renderRectangle(screen, position, color):
 	if len(color) == 3 or color[3] == 255: return pygame.draw.rect(screen, color, position)
@@ -41,4 +58,14 @@ def renderRectangle(screen, position, color):
 	pygame.draw.rect(surface, (r, g, b), pygame.Rect(0, 0, width, height))
 	surface.set_alpha(alpha)
 	screen.blit(surface, pygame.Rect(x, y, width, height), pygame.Rect(0, 0, width, height))
-	
+
+def computeMD5(string):
+	try:
+		import md5
+		m = md5.new()
+		m.update(string)
+	except:
+		import hashlib
+		m = hashlib.md5()
+		m.update(string.encode('latin-1'))
+	return m.hexdigest()

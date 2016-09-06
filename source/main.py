@@ -38,6 +38,6 @@ def main():
 		if delay > 0:
 			time.sleep(delay)
 		else:
-			print "Dropping frames!"
+			print("Dropping frames!")
 
 main()

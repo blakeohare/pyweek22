@@ -20,7 +20,31 @@ class JoystickWrapper:
 			'start': None,
 			'trigger': None,
 		}]
+		self.knownState = {}
 		self.taken = [{}]
+		self.fingerprint = computeMD5(self.name)[:10]
+		self.alreadyConfigured = False
+		self.configFilename = 'joystick-config-' + self.fingerprint + '.txt'
+		existingConfig = readFileMaybe(self.configFilename)
+		if existingConfig != None:
+			for line in existingConfig.split('\n'):
+				line = line.strip().lower()
+				if len(line) > 0:
+					parts = line.split(':')
+					action = parts[0]
+					config = parts[1:]
+					if config[0] == 'b':
+						config = ('b', int(config[1]))
+					elif config[0] == 'a':
+						config = ('a', int(config[1]), config[2] == 'true')
+					elif config[0] == 'h':
+						config = ('h', int(config[1]), int(config[2]), config[3] == 'true')
+					else:
+						continue # ignore invalid file data
+					self.configMapping[-1][action] = config
+					self.alreadyConfigured = True # called redundantly, but want to make sure it's only invoked for non-empty files.
+		
+		print(self.configMapping[-1])
 		
 	def pushCleanConfig(self):
 		self.configMapping.append({})
@@ -41,6 +65,82 @@ class JoystickWrapper:
 	def flattenConfig(self):
 		self.configMapping = self.configMapping[-1:]
 		self.taken = self.taken[-1:]
+	
+	def saveConfig(self):
+		config = self.configMapping[-1]
+		output = []
+		keys = list(config.keys())
+		keys.sort()
+		for key in keys:
+			action = key
+			binding = config[key]
+			row = ':'.join(map(str, [action] + list(binding)))
+			output.append(row)
+		text = '\n'.join(output)
+		writeTextFile('joystick-config-' + self.fingerprint + '.txt', text)
+	
+	def getBooleanState(self, action):
+		if not self.initialized: self.initialize()
+		binding = self.configMapping[-1].get(action)
+		if binding != None:
+			if binding[0] == 'b':
+				output = self.js.get_button(binding[1])
+			elif binding[0] == 'a':
+				value = self.js.get_axis(binding[1])
+				if binding[2]:
+					output = value > .5
+				else:
+					output = value < -.5
+			elif binding[0] == 'h':
+				value = self.js.get_hat(binding[1])[binding[2]]
+				if binding[3]:
+					output = value > .5
+				else:
+					output =value < -.5
+			else:
+				output = False
+		else:
+			output = False
+		
+		self.knownState[action] = output
+		return output
+	
+	def getButtonPreviousState(self, action):
+		return self.knownState.get(action, False)
+	
+	def getAxis(self, actionNegative, actionPositive, noDead):
+		getFloat = self.getFloatNoDeadZone if noDead else self.getFloatState
+		negative = getFloat(actionNegative)
+		positive = getFloat(actionPositive)
+		
+		if negative > positive:
+			return -negative
+		return positive
+	
+	def getFloatNoDeadZone(self, action):
+		output = self.getFloatState(action)
+		if output < 0.2: return 0.0
+		return (output - 0.2) / 0.8
+	
+	def getFloatState(self, action):
+		if not self.initialized: self.initialize()
+		binding = self.configMapping[-1].get(action)
+		if binding != None:
+			if binding[0] == 'b':
+				return 1.0 if self.js.get_button(binding[1]) else 0.0
+			elif binding[0] == 'a':
+				value = self.js.get_axis(binding[1])
+				if binding[2]:
+					return 1.0 * value if value > 0 else 0.0
+				else:
+					return -1.0 * value if value < 0 else 0.0
+			elif binding[0] == 'h':
+				value = self.js.get_hat(binding[1])[binding[2]]
+				if binding[3]:
+					return 1.0 * value if value > 0 else 0.0
+				else:
+					return -1.0 * value if value < 0 else 0.0
+		return 0.0
 	
 	def configure(self, action):
 		taken = self.taken[-1]
@@ -111,10 +211,15 @@ class InputManager_:
 			self.joysticks = []
 			for i in range(pygame.joystick.get_count()):
 				js = pygame.joystick.Joystick(i)
-				self.joysticks.append(JoystickWrapper(i, js))
+				jsWrapper = JoystickWrapper(i, js)
+				self.joysticks.append(jsWrapper)
+				if jsWrapper.alreadyConfigured and self.activeJoystick == -1:
+					self.activeJoystick = i
 		return self.joysticks
 	
 	def applySystemEvents(self, events):
+		self.getJoysticks()
+		
 		# Reset all values
 		while len(self.menuEventQueue) > 0:
 			self.menuEventQueue.pop()
@@ -164,15 +269,32 @@ class InputManager_:
 		self.keyboardMoveVector[0] = -1 if leftPressed else 1 if rightPressed else 0
 		self.keyboardMoveVector[1] = -1 if upPressed else 1 if downPressed else 0
 		
+		joystick = self.getActiveJoystick()
+		if joystick != None:
+			self.joystickMoveVector[0] = joystick.getAxis('move-left', 'move-right', True)
+			self.joystickMoveVector[1] = joystick.getAxis('move-up', 'move-down', True)
+			jumpPreviousState = joystick.getButtonPreviousState('a')
+			jumpCurrentState = joystick.getBooleanState('a')
+			self.jumpPressed = jumpCurrentState
+			if jumpCurrentState != jumpPreviousState:
+				self.jumpPressedThisFrame = jumpCurrentState
+				self.jumpReleasedThisFrame = jumpPreviousState
+			else:
+				self.jumpPressedThisFrame = False
+				self.jumpReleasedThisFrame = False
+		
 	def getMenuEvents(self):
 		return self.menuEventQueue
 	
 	def getDirectionVector(self):
 		
-		if self.useKeyboard:
+		if self.activeJoystick == -1:
 			x, y = self.keyboardMoveVector
 		else:
-			x, y = self.joystickMoveVector
+			kx, ky = self.keyboardMoveVector
+			jx, jy = self.joystickMoveVector
+			x = kx if abs(kx) > abs(jx) else jx
+			y = ky if abs(ky) > abs(jy) else jy
 		
 		dist = (x ** 2 + y ** 2) ** .5
 		if dist > 1:

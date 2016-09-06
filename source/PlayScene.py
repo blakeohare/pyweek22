@@ -91,8 +91,6 @@ class PlayScene:
 		self.renderTiles(screen, cameraOffsetX, cameraOffsetY, rt)
 		self.renderSprites(screen, self.sprites, cameraOffsetX, cameraOffsetY)
 		
-		TextRenderer.render(screen, "Hello, World!", 100, 100)
-	
 	def renderTiles(self, screen, cameraOffsetX, cameraOffsetY, rt):
 		
 		py = cameraOffsetY
