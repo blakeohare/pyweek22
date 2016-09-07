@@ -1,0 +1,22 @@
+﻿<Window x:Class="MapEditor.NewMapMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MapEditor"
+        mc:Ignorable="d"
+        Title="NewMapMenu" Height="300" Width="300">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Width"/>
+                <TextBox x:Name="map_width"  Width="300"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Height"/>
+                <TextBox x:Name="map_height"  Width="300"/>
+            </StackPanel>
+            <Button x:Name="ok_button">OK</Button>
+        </StackPanel>
+    </Grid>
+</Window>
