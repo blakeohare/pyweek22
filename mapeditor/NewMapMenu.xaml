@@ -5,18 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MapEditor"
         mc:Ignorable="d"
-        Title="NewMapMenu" Height="300" Width="300">
-    <Grid>
-        <StackPanel Orientation="Vertical">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Width"/>
-                <TextBox x:Name="map_width"  Width="300"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Height"/>
-                <TextBox x:Name="map_height"  Width="300"/>
-            </StackPanel>
-            <Button x:Name="ok_button">OK</Button>
-        </StackPanel>
+        Title="NewMapMenu" Height="198.776" Width="351.02">
+    <Grid Height="128" VerticalAlignment="Top" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30.5"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="62*"/>
+            <ColumnDefinition Width="233*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Width" VerticalAlignment="Center"/>
+        <TextBox x:Name="map_width" Grid.Column="1" Margin="4"/>
+
+        <TextBlock Text="Height" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBox x:Name="map_height" Grid.Row="1" Grid.Column="1" Margin="4"/>
+
+        <Button x:Name="ok_button" Grid.Row="2" Grid.Column="1" Content="OK" Margin="8"/>
+
     </Grid>
 </Window>

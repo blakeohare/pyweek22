@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -58,6 +59,7 @@
     <Compile Include="MagicBitmap.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapParser.cs" />
+    <Compile Include="MapSerializer.cs" />
     <Compile Include="NewMapMenu.xaml.cs">
       <DependentUpon>NewMapMenu.xaml</DependentUpon>
     </Compile>

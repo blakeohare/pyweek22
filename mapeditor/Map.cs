@@ -8,7 +8,7 @@ namespace MapEditor
 {
     public class Map
     {
-        private string path;
+        public string Path { get; set; }
         public bool IsDirty { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
@@ -21,12 +21,12 @@ namespace MapEditor
             this.Height = height;
             this.Tiles = new Tile[width, height];
             this.IsDirty = true;
-            this.path = null;
+            this.Path = null;
             this.rawValues = new Dictionary<string, string>();        }
 
         public Map(string path)
         {
-            this.path = path;
+            this.Path = path;
             this.IsDirty = false;
             MapParser parser = new MapParser(path);
             this.Width = parser.Width;
@@ -38,7 +38,7 @@ namespace MapEditor
         {
             get
             {
-                return (this.IsDirty ? "* " : "") + (this.path ?? "Untitled Map") + " (" + this.Width + " x " + this.Height + ")";
+                return (this.IsDirty ? "* " : "") + (this.Path ?? "Untitled Map") + " (" + this.Width + " x " + this.Height + ")";
             }
         }
     }

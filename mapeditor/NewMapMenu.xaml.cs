@@ -22,7 +22,10 @@ namespace MapEditor
         public NewMapMenu()
         {
             InitializeComponent();
+            this.map_width.Text = "20";
+            this.map_height.Text = "15";
             this.ok_button.Click += Ok_button_Click;
+            this.map_width.Focus();
         }
 
         private void Ok_button_Click(object sender, RoutedEventArgs e)

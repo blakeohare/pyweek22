@@ -37,6 +37,11 @@ namespace MapEditor
         private CursorState cursorState = CursorState.NONE;
         private Map _map = null;
 
+        public void ClearMapCache()
+        {
+            this._map = null;
+        }
+
         public Map Map
         {
             get
@@ -57,6 +62,12 @@ namespace MapEditor
             this.mouse_catcher.MouseDown += this.MouseDownHandler;
             this.mouse_catcher.MouseUp += this.MouseUpHandler;
             this.mouse_catcher.MouseMove += this.MouseMoveHandler;
+        }
+
+        public void ForceRefresh()
+        {
+            this.isUiDirty = true;
+            this.Refresh();
         }
 
         public void Refresh()
@@ -248,6 +259,8 @@ namespace MapEditor
             {
                 this.Map.Tiles[col, row] = brush;
                 this.isUiDirty = true;
+                this.Map.IsDirty = true;
+                MainWindow.Instance.RefreshDisplayTitle();
             }
         }
     }

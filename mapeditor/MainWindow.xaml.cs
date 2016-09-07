@@ -20,9 +20,18 @@ namespace MapEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static MainWindow Instance = null; 
-        
-        public Map ActiveDocument { get; set; }
+        public static MainWindow Instance = null;
+
+        private Map _activeDocument = null;
+        public Map ActiveDocument
+        {
+            get { return this._activeDocument; }
+            set
+            {
+                this._activeDocument = value;
+                this.tileBoard.ClearMapCache();
+            }
+        }
 
         public bool IsKeyPressed(string id)
         {
@@ -66,25 +75,112 @@ namespace MapEditor
             this.palette.ItemsSource = TileStore.GetTiles();
         }
 
-        private void MenuItem_New(object sender, RoutedEventArgs e)
+        // Prompts a save if document dirty
+        // Returns true if whatever you are doing should continue (false returned if user cancels save.
+        private bool PromptSaveIfNecessaryAndMaybeContinue()
         {
             if (this.ActiveDocument != null && this.ActiveDocument.IsDirty)
             {
                 MessageBoxResult result = System.Windows.MessageBox.Show("Save changes?", "Hi", MessageBoxButton.YesNoCancel);
-                if (result == MessageBoxResult.Cancel) return;
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return false;
+                }
+
                 if (result == MessageBoxResult.Yes)
                 {
-                    // TODO: save
+                    return this.SaveImpl();
+                }
+
+                if (result == MessageBoxResult.No)
+                {
+                    return true;
+                }
+
+                throw new Exception();
+            }
+            return true;
+        }
+
+        private void MenuItem_New(object sender, RoutedEventArgs e)
+        {
+            if (this.PromptSaveIfNecessaryAndMaybeContinue())
+            {
+                new NewMapMenu().ShowDialog();
+            }
+        }
+
+        private void MenuItem_Open(object sender, RoutedEventArgs e)
+        {
+            if (this.PromptSaveIfNecessaryAndMaybeContinue())
+            {
+                System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+                System.Windows.Forms.DialogResult result = ofd.ShowDialog();
+                switch (result)
+                {
+                    case System.Windows.Forms.DialogResult.OK:
+                        string path = ofd.FileName;
+                        if (System.IO.File.Exists(path))
+                        {
+                            this.ActiveDocument = new Map(path);
+                            this.RefreshDisplayTitle();
+                            this.tileBoard.ForceRefresh();
+                        }
+                        break;
+                    case System.Windows.Forms.DialogResult.Cancel:
+                        break;
+                    default:
+                        throw new Exception();
                 }
             }
-            new NewMapMenu().ShowDialog();
+        }
+
+        private void MenuItem_Save(object sender, RoutedEventArgs e)
+        {
+            if (this.ActiveDocument != null && this.ActiveDocument.IsDirty)
+            {
+                this.SaveImpl();
+            }
+        }
+
+        private bool SaveImpl()
+        {
+            if (this.ActiveDocument == null) return false;
+
+            if (this.ActiveDocument.Path == null)
+            {
+                System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+
+                System.Windows.Forms.DialogResult result = sfd.ShowDialog();
+                switch (result)
+                {
+                    case System.Windows.Forms.DialogResult.OK:
+                        break;
+                    case System.Windows.Forms.DialogResult.Cancel:
+                        return false;
+                    default:
+                        throw new Exception();
+                }
+
+                string filename = sfd.FileName;
+                this.ActiveDocument.Path = filename;
+            }
+            
+            string mapContent = new MapSerializer(this.ActiveDocument).Serialize();
+            System.IO.File.WriteAllText(this.ActiveDocument.Path, mapContent);
+            this.ActiveDocument.IsDirty = false;
+            this.RefreshDisplayTitle();
+
+            return true;
         }
 
         public void CreateNewMap(int width, int height)
         {
             this.ActiveDocument = new Map(width, height);
+            
             this.RefreshDisplayTitle();
-            this.tileBoard.Refresh();
+            this.tileBoard.ForceRefresh();
+            
         }
 
         public void RefreshDisplayTitle()
