@@ -63,6 +63,9 @@
     <Compile Include="NewMapMenu.xaml.cs">
       <DependentUpon>NewMapMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ResizeMenu.xaml.cs">
+      <DependentUpon>ResizeMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tile.cs" />
     <Compile Include="TileBoard.xaml.cs">
       <DependentUpon>TileBoard.xaml</DependentUpon>
@@ -81,6 +84,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="NewMapMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResizeMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

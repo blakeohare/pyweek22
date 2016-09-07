@@ -78,6 +78,7 @@ namespace MapEditor
                     case "ctrl+n": this.MenuItem_New(this, null); break;
                     case "ctrl+o": this.MenuItem_Open(this, null); break;
                     case "ctrl+s": this.MenuItem_Save(this, null); break;
+                    case "ctrl+e": this.MenuItem_Resize(this, null); break;
                     default: break;
                 }
             }
@@ -113,6 +114,82 @@ namespace MapEditor
                 throw new Exception();
             }
             return true;
+        }
+
+        private void MenuItem_Resize(object sender, RoutedEventArgs e)
+        {
+            if (this.ActiveDocument == null) return;
+            int width = this.ActiveDocument.Width;
+            int height = this.ActiveDocument.Height;
+            ResizeMenu menu = new ResizeMenu(width, height);
+            menu.Owner = this;
+            menu.ShowDialog();
+        }
+
+        public void ResizeDocument(int newWidth, int newHeight, bool anchorLeft, bool anchorTop)
+        {
+            if (this.ActiveDocument.Width == newWidth && this.ActiveDocument.Height == newHeight) return;
+
+            Tile[,] sourceTiles = this.ActiveDocument.Tiles;
+            Tile[,] targetTiles = new Tile[newWidth, newHeight];
+
+            int sourceLeft = 0;
+            int sourceWidth = this.ActiveDocument.Width;
+            int targetWidth;
+            int targetLeft;
+            if (newWidth > sourceWidth)
+            {
+                targetWidth = sourceWidth;
+                targetLeft = anchorLeft ? 0 : (newWidth - sourceWidth);
+            }
+            else
+            {
+                sourceLeft = anchorLeft ? 0 : (sourceWidth - newWidth);
+                sourceWidth = newWidth;
+                targetWidth = newWidth;
+                targetLeft = 0;
+            }
+
+            int sourceTop = 0;
+            int sourceHeight = this.ActiveDocument.Height;
+            int targetHeight;
+            int targetTop;
+            if (newHeight > sourceHeight)
+            {
+                targetHeight = sourceHeight;
+                targetTop = anchorTop ? 0 : (newHeight - sourceHeight);
+            }
+            else
+            {
+                sourceTop = anchorTop ? 0 : (sourceHeight - newHeight);
+                sourceHeight = newHeight;
+                targetHeight = newHeight;
+                targetTop = 0;
+            }
+
+            int targetX, sourceX, targetY, sourceY;
+            sourceY = sourceTop;
+            targetY = targetTop;
+            for (int y = 0; y < sourceHeight; ++y)
+            {
+                sourceX = sourceLeft;
+                targetX = targetLeft;
+                for (int x = 0; x < sourceWidth; ++x)
+                {
+                    targetTiles[targetX, targetY] = sourceTiles[sourceX, sourceY];
+                    sourceX++;
+                    targetX++;
+                }
+                sourceY++;
+                targetY++;
+            }
+
+            this.ActiveDocument.Tiles = targetTiles;
+            this.ActiveDocument.Width = newWidth;
+            this.ActiveDocument.Height = newHeight;
+            this.ActiveDocument.IsDirty = true;
+            this.tileBoard.ForceRefresh();
+            this.RefreshDisplayTitle();
         }
 
         private void MenuItem_New(object sender, RoutedEventArgs e)
