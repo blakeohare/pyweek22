@@ -38,11 +38,7 @@ namespace MapEditor
             return this.keysPressed.ContainsKey(id) && this.keysPressed[id];
         }
 
-        private Dictionary<string, bool> keysPressed = new Dictionary<string, bool>()
-        {
-            { "space", false },
-            { "shift", false },
-        };
+        private Dictionary<string, bool> keysPressed = new Dictionary<string, bool>();
 
         public MainWindow()
         {
@@ -51,8 +47,6 @@ namespace MapEditor
             InitializeComponent();
 
             this.Loaded += MainWindow_Loaded;
-            this.KeyDown += (sender, e) => { this.KeyDownUpHandler(e.Key, true); };
-            this.KeyUp += (sender, e) => { this.KeyDownUpHandler(e.Key, false); };
             EventManager.RegisterClassHandler(typeof(Window), Keyboard.KeyUpEvent, new KeyEventHandler(this.KeyUpHandler), true);
             EventManager.RegisterClassHandler(typeof(Window), Keyboard.KeyDownEvent, new KeyEventHandler(this.KeyDownHandler), true);
         }
@@ -62,11 +56,30 @@ namespace MapEditor
 
         private void KeyDownUpHandler(Key key, bool down)
         {
+            string id = key.ToString().ToLower();
             switch (key)
             {
-                case Key.Space: this.keysPressed["space"] = down; break;
-                case Key.LeftShift: this.keysPressed["shift"] = down; break;
-                case Key.RightShift: this.keysPressed["shift"] = down; break;
+                case Key.LeftShift: id = "shift"; break;
+                case Key.RightShift: id = "shit"; break;
+                case Key.LeftCtrl: id = "ctrl"; break;
+                case Key.RightCtrl: id = "ctrl"; break;
+                default: break;
+            }
+            this.keysPressed[id] = down;
+
+            if (down)
+            {
+                string shortcutPattern =
+                    (this.IsKeyPressed("ctrl") ? "ctrl+" : "") +
+                    (this.IsKeyPressed("shift") ? "shift+" : "") +
+                    id;
+                switch (shortcutPattern)
+                {
+                    case "ctrl+n": this.MenuItem_New(this, null); break;
+                    case "ctrl+o": this.MenuItem_Open(this, null); break;
+                    case "ctrl+s": this.MenuItem_Save(this, null); break;
+                    default: break;
+                }
             }
         }
 
@@ -165,7 +178,7 @@ namespace MapEditor
                 string filename = sfd.FileName;
                 this.ActiveDocument.Path = filename;
             }
-            
+
             string mapContent = new MapSerializer(this.ActiveDocument).Serialize();
             System.IO.File.WriteAllText(this.ActiveDocument.Path, mapContent);
             this.ActiveDocument.IsDirty = false;
@@ -177,10 +190,10 @@ namespace MapEditor
         public void CreateNewMap(int width, int height)
         {
             this.ActiveDocument = new Map(width, height);
-            
+
             this.RefreshDisplayTitle();
             this.tileBoard.ForceRefresh();
-            
+
         }
 
         public void RefreshDisplayTitle()
