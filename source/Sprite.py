@@ -345,14 +345,13 @@ class Sprite:
 	
 	def update(self, scene, timeRatio):
 		if self.ground == None:
-			self.vy += GRAVITY
+			self.vy += GRAVITY * (timeRatio)
 			self.dy += self.vy
 		else:
 			self.vy = 0
 			self.dy = 0
 		
 		self.dx += self.vx
-			
 		
 		self.dx *= timeRatio
 		self.dy *= timeRatio

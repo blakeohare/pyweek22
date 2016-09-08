@@ -17,7 +17,7 @@ class ImageLibrary_:
 						rpath = rpath.replace('-west', '-east')
 					reverse = True
 				
-			img = pygame.image.load(rpath)
+			img = pygame.image.load(rpath).convert_alpha()
 			if reverse:
 				if self.images.get(rpath) == None:
 					self.images[rpath.replace('\\', '/')] = img
@@ -41,8 +41,12 @@ class ImageLibrary_:
 			width, height = img.get_size()
 			width = int(width * scale)
 			height = int(height * scale)
-			img = pygame.transform.scale(img, (width, height)).convert()
-			img.set_colorkey((255, 0, 255))
+			newSurf = pygame.Surface((width, height)).convert()
+			newSurf.fill((255, 0, 255))
+			img = pygame.transform.scale(img, (width, height))
+			newSurf.blit(img, (0, 0))
+			newSurf.set_colorkey((255, 0, 255))
+			img = newSurf
 			lookup[path] = img
 		
 		return img

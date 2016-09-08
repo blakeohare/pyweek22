@@ -1,6 +1,6 @@
-class OptionsMenu:
+class OptionsMenu(AbstractScene):
 	def __init__(self, background):
-		self._next = None
+		AbstractScene.__init__(self)
 		self.background = background
 		self.options = [
 			('Return', 'return'),

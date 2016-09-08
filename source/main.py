@@ -18,7 +18,7 @@ def main():
 		
 		i += 1
 		
-		InputManager.applySystemEvents(pygame.event.get())
+		InputManager.applySystemEvents(scene, pygame.event.get())
 		if InputManager.quitAttempted:
 			return
 		

@@ -1,7 +1,8 @@
 
-class PlayScene:
+class PlayScene(AbstractScene):
 	def __init__(self):
-		self._next = None
+		AbstractScene.__init__(self)
+		self.isPlayScene = True
 		values = MapParser.parseMap('test')
 		self.width = values['width']
 		self.height = values['height']
@@ -24,10 +25,26 @@ class PlayScene:
 		
 		self.rt = 0.0 # current time as far as the renderer is concerned
 		self.rtLast = time.time() # the last time the rt value was updated
+		self.magicJumpCounter = -1
 		
 	def update(self):
 		player = self.player
 		playerPos = (player.x, player.y)
+		
+		if InputManager.isMagicJumpPressed():
+			if self.magicJumpCounter < 0:
+				self.magicJumpCounter = 1
+			else:
+				self.magicJumpCounter += 1
+		elif self.magicJumpCounter > 20:
+			self.magicJumpCounter = 19
+		else:
+			self.magicJumpCounter -= 1
+		
+		mjcRatio = self.magicJumpCounter / 20.0
+		if mjcRatio > 1: mjcRatio = 1.0
+		elif mjcRatio < 0: mjcRatio = 0.0
+		timeRatio = 1.0 - (1.0 - TIME_SLOWDOWN_RATIO) * mjcRatio
 		
 		# Apply horizontal movement and inertia
 		movementVector = InputManager.getDirectionVector()
@@ -66,7 +83,7 @@ class PlayScene:
 			player.vy *= .3
 		
 		newSprites = []
-		dt = 1.0 # TODO: update for bullet time
+		dt = 1.0 * timeRatio
 		for sprite in self.sprites:
 			sprite.update(self, dt)
 			if not sprite.dead:

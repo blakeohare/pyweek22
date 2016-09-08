@@ -1,6 +1,6 @@
-class TitleScene:
+class TitleScene(AbstractScene):
 	def __init__(self):
-		self._next = None
+		AbstractScene.__init__(self)
 	
 	def update(self):
 		pass
