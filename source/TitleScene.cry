@@ -1,9 +1,7 @@
-class TitleScene(AbstractScene):
-	def __init__(self):
-		AbstractScene.__init__(self)
+class TitleScene : AbstractScene {
+	constructor() : base() { }
 	
-	def update(self):
-		pass
-	
-	def render(self):
-		pass
+	function update() { }
+
+	function render() { }
+}

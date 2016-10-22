@@ -4,13 +4,14 @@ class JoystickMenu : AbstractScene {
 	
 	field background;
 	field options;
+	field activeIndex = 0;
 
 	constructor (background) : base() {
 		this.background = background;
 		this.options = [
-			('Back', 'back'),
-			('Configure Active Gamepad', 'config'),
-			('No Gamepad Selected', 'none')
+			['Back', 'back'],
+			['Configure Active Gamepad', 'config'],
+			['No Gamepad Selected', 'none'],
 		];
 		
 		joysticks = InputManager.getJoysticks();
@@ -18,8 +19,6 @@ class JoystickMenu : AbstractScene {
 			joystick = joysticks[i];
 			this.options.add([joystick.name, 'select:' + i]);
 		}
-		
-		this.activeIndex = 0;
 	}
 	
 	function update() {
@@ -63,7 +62,7 @@ class JoystickMenu : AbstractScene {
 	function render() {
 		this.background.render();
 		
-		Draw.renderRectangle(
+		Draw.rectangle(
 			100, 100, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, 
 			0, 0, 0, 128);
 		

@@ -8,7 +8,7 @@ class JoystickConfigMenu : AbstractScene {
 	field initialized = false;
 	field buttons;
 
-	constructor (background, joystick) {
+	constructor (background, joystick) : base() {
 		this.background = background;
 		this.joystick = joystick;
 		this.buttons = [
@@ -33,7 +33,7 @@ class JoystickConfigMenu : AbstractScene {
 		
 		if (InputManager.escapePressed) {
 			this.joystick.popConfig();
-			this._next = this.background
+			this._next = this.background;
 			this.background._next = null;
 		}
 		
@@ -52,7 +52,7 @@ class JoystickConfigMenu : AbstractScene {
 	
 	function render() {
 		this.background.render();
-		Draw.renderRectangle(
+		Draw.rectangle(
 			100, 100, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, 
 			0, 0, 0, 180);
 		

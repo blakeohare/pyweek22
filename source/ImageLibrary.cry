@@ -15,10 +15,10 @@ static class ImageLibrary {
 		img = ImageLibrary.images.get(path);
 		if (img == null) {
 			rpath = 'images/' + path;
-			reverse = false
-			if (rpath.contains('-east') || rpath.contains('-west') {
+			reverse = false;
+			if (rpath.contains('-east') || rpath.contains('-west')) {
 				if (!ImageLibrary.imageFiles.get(rpath, false)) {
-					if (path.contains('-east') {
+					if (path.contains('-east')) {
 						rpath = rpath.replace('-east', '-west');
 					} else {
 						rpath = rpath.replace('-west', '-east');
@@ -54,6 +54,6 @@ static class ImageLibrary {
 			img = img.scale(width, height);
 			lookup[path] = img;
 		}
-		return img
+		return img;
 	}
 }

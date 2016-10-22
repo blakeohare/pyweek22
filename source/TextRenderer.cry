@@ -46,7 +46,7 @@ static class TextRenderer {
 			TextRenderer.images[str(i)] = 'num_' + i;
 		}
 		
-		for (key in TextRenderer.images.keys()) {
+		for (key : TextRenderer.images.keys()) {
 			TextRenderer.images[key] = ImageLibrary.getAtScale('text/' + TextRenderer.images[key] + '.png', 2);
 		}
 		

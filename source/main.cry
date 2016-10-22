@@ -1,7 +1,7 @@
 import Game;
-import Graphcis2D;
+import Graphics2D;
 
-function main()
+function main() {
 	
 	window = new GameWindow("Platformer", FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
 

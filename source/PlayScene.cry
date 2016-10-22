@@ -2,6 +2,19 @@ import Math;
 
 class PlayScene : AbstractScene {
 	
+	field width;
+	field height;
+	field tiles;
+	field music;
+	field sprites;
+	field doors;
+	field player;
+	field cameraX;
+	field cameraY;
+	field rt = 0.0; // current time as far as the renderer is concerned
+	field rtLast;
+	field magicJumpCounter = -1;
+	field animationSpeedRatio = 1.0;
 
 	constructor() : base() {
 		this.isPlayScene = true;
@@ -24,9 +37,7 @@ class PlayScene : AbstractScene {
 		this.cameraX = this.player.x;
 		this.cameraY = this.player.y;
 		
-		this.rt = 0.0; // current time as far as the renderer is concerned
 		this.rtLast = Core.currentTime(); // the last time the rt value was updated
-		this.magicJumpCounter = -1;
 	}
 		
 	function update() {
@@ -152,7 +163,7 @@ class PlayScene : AbstractScene {
 					img = tile.staticImage;
 					if (img == null) {
 						images = tile.images;
-						img = images[int(rt * (8.0 / 60) * this.animationSpeedRatio) % images.length];
+						img = images[Math.floor(rt * (8.0 / 60) * this.animationSpeedRatio) % images.length];
 					}
 					img.draw(px, py);
 				}

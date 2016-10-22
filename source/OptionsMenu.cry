@@ -1,7 +1,11 @@
 
 class OptionsMenu : AbstractScene {
 
-	constructor (background) : base() {
+	field background;
+	field options;
+	field activeIndex = 0;
+
+	constructor(background) : base() {
 		this.background = background;
 		this.options = [
 			['Return', 'return'],
@@ -9,8 +13,6 @@ class OptionsMenu : AbstractScene {
 			['Keyboard Options', 'keyboard'],
 			['Gamepad Options', 'gamepad'],
 		];
-		
-		this.activeIndex = 0;
 	}
 	
 	function update() {

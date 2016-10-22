@@ -33,4 +33,8 @@ class JoystickWrapper {
 	function getAxisState() {
 		this.device.getState(XBoxButton.AXIS1);
 	}
+
+	function getState() {
+		Core.fail("TODO: implement");
+	}
 }

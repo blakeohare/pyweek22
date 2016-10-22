@@ -1,5 +1,5 @@
 
-static class InputManager
+static class InputManager {
 	
 	static field menuEventQueue = [];
 	static field quitAttempted = false;
@@ -10,6 +10,7 @@ static class InputManager
 	static field jumpPressed = false;
 	static field jumpPressedThisFrame = false;
 	static field jumpReleasedThisFrame = false;
+	static field magicJumpPressed = false;
 	static field keyboardMagicJumpPressed = false;
 	static field joystickMagicJumpPressed = false;
 	static field systemKeysPressed = {};
@@ -70,7 +71,7 @@ static class InputManager
 						if (down) InputManager.menuEventQueue.add('up');
 						break;
 
-					case KeboardKey.S:
+					case KeyboardKey.S:
 					case KeyboardKey.DOWN:
 						if (down) InputManager.menuEventQueue.add('down');
 						break;
@@ -172,7 +173,7 @@ static class InputManager
 			jx = InputManager.joystickMoveVector[0];
 			jy = InputManager.joystickMoveVector[1];
 			x = abs(kx) > abs(jx) ? kx : jx;
-			y = abs(ky) > abs(jy) : ky : jy;
+			y = abs(ky) > abs(jy) ? ky : jy;
 		}
 
 		dist = (x ** 2 + y ** 2) ** .5;

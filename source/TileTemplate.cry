@@ -4,7 +4,7 @@ class TileTemplate {
 	field inclineType = null;
 	field animationSpeedRatio = 1.0; // TODO: flags to modify this
 	field isIncline;
-	field images
+	field images;
 	field staticImage = null;
 
 	constructor(id, images, flags) {
@@ -29,6 +29,7 @@ class TileTemplate {
 					break;
 				default:
 					Core.fail("Unknown tile flag: " + flag);
+					break;
 			}
 		}
 		this.isIncline = this.inclineType != null;

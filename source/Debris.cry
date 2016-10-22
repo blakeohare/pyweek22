@@ -49,8 +49,8 @@ class Debris {
 		right = left + int(this.width + .5);
 		bottom = top + int(this.width + .5);
 		if (right < 0 || bottom < 0 || left >= SCREEN_WIDTH || top >= SCREEN_HEIGHT) return;
-		Draw.renderRectangle(
+		Draw.rectangle(
 			left, top, right - left, bottom - top,
-			this.color[0], this.color[1], this.color[2], this.alpha);
+			this.colorR, this.colorG, this.colorB, this.alpha);
 	}
 }
