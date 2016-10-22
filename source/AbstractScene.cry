@@ -1,0 +1,12 @@
+class AbstractScene {
+	field _next = null;
+	field isPlayScene = false;
+
+	function update() {
+		Core.fail("Override me.");
+	}
+	
+	function render() {
+		Core.fail("Override me.");
+	}
+}

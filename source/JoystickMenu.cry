@@ -1,0 +1,86 @@
+import Graphics2D;
+
+class JoystickMenu : AbstractScene {
+	
+	field background;
+	field options;
+
+	constructor (background) : base() {
+		this.background = background;
+		this.options = [
+			('Back', 'back'),
+			('Configure Active Gamepad', 'config'),
+			('No Gamepad Selected', 'none')
+		];
+		
+		joysticks = InputManager.getJoysticks();
+		for (i = 0; i < joysticks.length; ++i) {
+			joystick = joysticks[i];
+			this.options.add([joystick.name, 'select:' + i]);
+		}
+		
+		this.activeIndex = 0;
+	}
+	
+	function update() {
+		for (event : InputManager.getMenuEvents()) {
+			if (event == 'up') {
+				if (this.activeIndex > 0) {
+					this.activeIndex--;
+				}
+			} else if (event == 'down') {
+				if (this.activeIndex < self.options.length - 1) {
+					this.activeIndex++;
+				}
+			} else if (event == 'enter') {
+				option = this.options[this.activeIndex][1];
+				if (option == 'back') {
+					this._next = this.background;
+					this.background._next = null;
+				} else if (option == 'config') {
+					js = InputManager.getActiveJoystick();
+					if (js != null) {
+						this._next = new JoystickConfigMenu(this, js);
+					}
+				} else if (option == 'none') {
+					InputManager.clearActiveJoystick();
+				} else {
+					parts = option.split(':');
+					if (parts[0] == 'select') {
+						index = int(parts[1]);
+						InputManager.setActiveJoystick(index);
+					}
+				}
+			}
+		}
+		
+		if (InputManager.escapePressed) {
+			this._next = this.background;
+			this.background._next = null;
+		}
+	}
+		
+	function render() {
+		this.background.render();
+		
+		Draw.renderRectangle(
+			100, 100, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, 
+			0, 0, 0, 128);
+		
+		TextRenderer.render("Gamepad Options", 110, 110);
+		
+		x = 200;
+		y = 200;
+
+		for (i = 0; i < this.options.length; ++i) {
+			option = this.options[i];
+			command = option[1].split(':');
+			label = option[0];
+			if (this.activeIndex == i) {
+				Draw.rectangle(x - 20, y, 10, 10, 255, 255, 255);
+			}
+			TextRenderer.render(label, x, y);
+			y += 50;
+		}
+	}
+}

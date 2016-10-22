@@ -1,0 +1,15 @@
+<build>
+	<projectname>Platformer</projectname>
+	<source>source</source>
+	<output>output</output>
+
+	<imagesheets>
+		<sheet id="all">
+			<prefix>images/</prefix>
+		</sheet>
+	</imagesheets>
+
+	<target name="python">
+		<platform>game-python-pygame</platform>
+	</target>
+</build>

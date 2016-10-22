@@ -1,0 +1,28 @@
+import Game;
+import Graphcis2D;
+
+function main()
+	
+	window = new GameWindow("Platformer", FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	scene = new PlayScene();
+	
+	while (true) {
+		
+		InputManager.applySystemEvents(scene, window.pumpEvents());
+		if (InputManager.quitAttempted) {
+			return;
+		}
+		
+		Draw.fill(0, 0, 0);
+		
+		scene.update();
+		scene.render();
+		
+		if (scene._next != null) {
+			scene = scene._next;
+		}
+
+		window.clockTick();
+	}
+}

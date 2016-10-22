@@ -1,0 +1,59 @@
+static class ImageLibrary {
+	static field imageSheet = null;
+	static field imageFiles = {};
+	static field images = {};
+	static field imagesByScale = {};
+
+	static function setImageSheet(sheet) {
+		ImageLibrary.imageSheet = sheet;
+		for (file : sheet.getFiles()) {
+			ImageLibrary.imageFiles[file] = true;
+		}
+	}
+
+	static function get(path) {
+		img = ImageLibrary.images.get(path);
+		if (img == null) {
+			rpath = 'images/' + path;
+			reverse = false
+			if (rpath.contains('-east') || rpath.contains('-west') {
+				if (!ImageLibrary.imageFiles.get(rpath, false)) {
+					if (path.contains('-east') {
+						rpath = rpath.replace('-east', '-west');
+					} else {
+						rpath = rpath.replace('-west', '-east');
+					}
+					reverse = true;
+				}
+			}
+				
+			img = GraphiscTexture.load(ImageLibrary.imageSheet.getImage(rpath));
+			if (reverse) {
+				if (ImageLibrary.images.get(rpath) == null) {
+					ImageLibrary.images[rpath] = img;
+				}
+				img = img.flip(true, false);
+			}
+			ImageLibrary.images[path] = img;
+		}
+		return img;
+	}
+	
+	static function getAtScale(path, scale) {
+		scaleKey = int(scale * 1000);
+		lookup = ImageLibrary.imagesByScale.get(scaleKey);
+		if (lookup == null) {
+			lookup = {};
+			ImageLibrary.imagesByScale[scaleKey] = lookup;
+		}
+		img = lookup.get(path);
+		if (img == null) {
+			img = ImageLibrary.get(path);
+			width = int(img.getWidth() * scale);
+			height = int(img.getHeight() * scale);
+			img = img.scale(width, height);
+			lookup[path] = img;
+		}
+		return img
+	}
+}

@@ -1,0 +1,41 @@
+class TileTemplate {
+	field blocking = true;
+	field bar = false;
+	field inclineType = null;
+	field animationSpeedRatio = 1.0; // TODO: flags to modify this
+	field isIncline;
+	field images
+	field staticImage = null;
+
+	constructor(id, images, flags) {
+		
+		for (flag : flags) {
+			switch (flag) {
+				case 'B':
+					this.bar = true;
+					this.blocking = false; // for most purposes (3 out of 4 directions) this is not blocking. 
+					break;
+				case 'P':
+					this.blocking = false;
+					break;
+				case '-':
+					// no-op flag
+					break;
+				case '/':
+					this.inclineType = 'up';
+					break;
+				case '\\':
+					this.inclineType = 'down';
+					break;
+				default:
+					Core.fail("Unknown tile flag: " + flag);
+			}
+		}
+		this.isIncline = this.inclineType != null;
+		this.images = images;
+		this.staticImage = null;
+		if (this.images.length == 1) {
+			this.staticImage = this.images[0];
+		}
+	}
+}

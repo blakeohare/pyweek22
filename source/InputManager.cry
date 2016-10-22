@@ -1,0 +1,190 @@
+
+static class InputManager
+	
+	static field menuEventQueue = [];
+	static field quitAttempted = false;
+
+	static field joystickMoveVector = [0.0, 0.0];
+	static field keyboardMoveVector = [0.0, 0.0];
+	static field useKeyboard = true;
+	static field jumpPressed = false;
+	static field jumpPressedThisFrame = false;
+	static field jumpReleasedThisFrame = false;
+	static field keyboardMagicJumpPressed = false;
+	static field joystickMagicJumpPressed = false;
+	static field systemKeysPressed = {};
+	static field escapePressed = false;
+	static field joysticks = null;
+	static field activeJoystick = -1;
+	
+	static function getActiveJoystick() {
+		if (InputManager.activeJoystick == -1) return null;
+		return InputManager.joysticks[InputManager.activeJoystick];
+	}
+	
+	static function setActiveJoystick(index) {
+		js = InputManager.joysticks[index];
+		InputManager.activeJoystick = index;
+		js.initialize();
+	}
+	
+	static function clearActiveJoystick() {
+		InputManager.activeJoystick = -1;
+	}
+	
+	static function getJoysticks() {
+		if (InputManager.joysticks == null) {
+			InputManager.joysticks = [];
+			for (i = 0; i < GamepadManager.getDeviceCount(); ++i) {
+				js = GamepadManager.getDeviceByIndex(i);
+				jsWrapper = new JoystickWrapper(i, js);
+				InputManager.joysticks.add(jsWrapper);
+				if (jsWrapper.alreadyConfigured && InputManager.activeJoystick == -1) {
+					InputManager.activeJoystick = i;
+				}
+			}
+		}
+		return InputManager.joysticks;
+	}
+	
+	static function applySystemEvents(activeScene, events) {
+		InputManager.getJoysticks();
+		
+		// Reset all values
+		InputManager.menuEventQueue.clear();
+	
+		InputManager.quitAttempted = false;
+		InputManager.jumpPressedThisFrame = false;
+		InputManager.jumpReleasedThisFrame = false;
+		InputManager.escapePressed = false;
+
+		for (event : events) {
+			if (event.type == EventType.KEY_DOWN || event.type == EventType.KEY_UP) {
+				InputManager.useKeyboard = true;
+				down = event.down;
+				k = event.key;
+				InputManager.systemKeysPressed[k] = down;
+				switch (k) {
+					case KeyboardKey.W:
+					case KeyboardKey.UP:
+						if (down) InputManager.menuEventQueue.add('up');
+						break;
+
+					case KeboardKey.S:
+					case KeyboardKey.DOWN:
+						if (down) InputManager.menuEventQueue.add('down');
+						break;
+
+					case KeyboardKey.A:
+					case KeyboardKey.LEFT:
+						if (down) InputManager.menuEventQueue.add('left');
+						break;
+
+					case KeyboardKey.D:
+					case KeyboardKey.RIGHT:
+						if (down) InputManager.menuEventQueue.add('right');
+						break;
+
+					case KeyboardKey.ESCAPE:
+						InputManager.escapePressed = down;
+						break;
+
+					case KeyboardKey.ENTER:
+						if (down) InputManager.menuEventQueue.add('enter');
+						InputManager.keyboardMagicJumpPressed = down;
+						break;
+
+					case KeyboardKey.SPACE:
+						if (down) InputManager.menuEventQueue.add('enter');
+						InputManager.jumpPressed = down;
+						InputManager.jumpPressedThisFrame = down;
+						if (!down) {
+							InputManager.jumpReleasedThisFrame = true;
+						}
+						break;
+
+					case KeyboardKey.F:
+						InputManager.magicJumpPressed = down;
+						break;
+				}
+			} else if (event.type == EventType.QUIT) {
+				InputManager.quitAttempted = true;
+			}
+		}
+		
+		pressed = InputManager.systemKeysPressed;
+		leftPressed = pressed.get(KeyboardKey.A, false);
+		rightPressed = pressed.get(KeyboardKey.D, false);
+		upPressed = pressed.get(KeyboardKey.W, false);
+		downPressed = pressed.get(KeyboardKey.S, false);
+		InputManager.keyboardMoveVector[0] = leftPressed ? -1 : rightPressed ? 1 : 0;
+		InputManager.keyboardMoveVector[1] = upPressed ? -1 : downPressed ? 1 : 0;
+		
+		joystick = InputManager.getActiveJoystick();
+		if (joystick != null) {
+			InputManager.joystickMoveVector[0] = joystick.getAxis('move-left', 'move-right', true);
+			InputManager.joystickMoveVector[1] = joystick.getAxis('move-up', 'move-down', true);
+			
+			jumpPreviousState = joystick.getButtonPreviousState('a');
+			jumpCurrentState = joystick.getBooleanState('a');
+			InputManager.jumpPressed = jumpCurrentState;
+			if (jumpCurrentState != jumpPreviousState) {
+				InputManager.jumpPressedThisFrame = jumpCurrentState;
+				InputManager.jumpReleasedThisFrame = jumpPreviousState;
+			} else {
+				InputManager.jumpPressedThisFrame = false;
+				InputManager.jumpReleasedThisFrame = false;
+			}
+			
+			startWasPressed = joystick.knownState.get('start', false);
+			startIsPressed = joystick.getBooleanState('start');
+			if (startIsPressed && !startWasPressed) {
+				if (activeScene.isPlayScene) {
+					InputManager.escapePressed = true;
+				} else {
+					InputManager.menuEventQueue.add('start');
+				}
+			}
+			bWasPressed = joystick.knownState.get('b', false);
+			bIsPressed = joystick.getBooleanState('b');
+			if (!bWasPressed && bIsPressed) {
+				InputManager.escapePressed = true;
+			}
+			
+			InputManager.joystickMagicJumpPressed = joystick.getBooleanState('trigger');
+		} else {
+			InputManager.joystickMagicJumpPressed = false;
+		}
+	}
+		
+	static function getMenuEvents() {
+		return InputManager.menuEventQueue;
+	}
+	
+	static function getDirectionVector() {
+		
+		if (InputManager.activeJoystick == -1) {
+			x = InputManager.keyboardMoveVector[0];
+			y = InputManager.keyboardMoveVector[0];
+		} else {
+			kx = InputManager.keyboardMoveVector[0];
+			ky = InputManager.keyboardMoveVector[1];
+			jx = InputManager.joystickMoveVector[0];
+			jy = InputManager.joystickMoveVector[1];
+			x = abs(kx) > abs(jx) ? kx : jx;
+			y = abs(ky) > abs(jy) : ky : jy;
+		}
+
+		dist = (x ** 2 + y ** 2) ** .5;
+		if (dist > 1) {
+			x = x / dist;
+			y = y / dist;
+		}
+		
+		return [x, y];
+	}
+	
+	static function isMagicJumpPressed() {
+		return InputManager.keyboardMagicJumpPressed || InputManager.joystickMagicJumpPressed;
+	}
+}

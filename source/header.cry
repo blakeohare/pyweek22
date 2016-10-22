@@ -1,0 +1,18 @@
+import math
+import os
+import pygame
+import random
+import time
+
+const FPS = 60;
+const SCREEN_WIDTH = 800;
+const SCREEN_HEIGHT = 600;
+
+const GRAVITY = 0.022;
+const PLAYER_JUMP_VELOCITY = -0.35;
+const PLAYER_WALLJUMP_VELOCITY_Y = PLAYER_JUMP_VELOCITY * 0.94;
+const PLAYER_WALLJUMP_VELOCITY_X_RATIO = 1.4;
+const PLAYER_WALK_VELOCITY = .2;
+const PLAYER_WALK_ACCELERATION = .03;
+
+const TIME_SLOWDOWN_RATIO = 0.1;

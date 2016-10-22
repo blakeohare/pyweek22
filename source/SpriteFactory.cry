@@ -1,0 +1,13 @@
+
+static class SpriteFactory {
+	static field types = {};
+
+	static function makeSprite(type, x, y) {
+		template = SpriteFactory.types.get(type);
+		if (template == null) {
+			template = new SpriteTemplate(type);
+			SpriteFactory.types[type] = template;
+		}
+		return new Sprite(template, x, y);
+	}
+}

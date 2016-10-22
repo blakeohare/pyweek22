@@ -1,0 +1,64 @@
+import Graphics2D;
+
+class JoystickConfigMenu : AbstractScene {
+	
+	field background;
+	field joystick;
+	field currentIndex = 0;
+	field initialized = false;
+	field buttons;
+
+	constructor (background, joystick) {
+		this.background = background;
+		this.joystick = joystick;
+		this.buttons = [
+			'move-left',
+			'move-right',
+			'move-up',
+			'move-down',
+			'a',
+			'b',
+			'x',
+			'y',
+			'start',
+			'trigger'];
+	}
+	
+	function update() {
+		if (!this.initialized) {
+			this.joystick.initialize();
+			this.joystick.pushCleanConfig();
+			this.initialized = true;
+		}
+		
+		if (InputManager.escapePressed) {
+			this.joystick.popConfig();
+			this._next = this.background
+			this.background._next = null;
+		}
+		
+		if (this.currentIndex >= this.buttons.length) {
+			this.joystick.flattenConfig();
+			this.joystick.saveConfig();
+			this._next = this.background;
+			this.background._next = null;
+		} else {
+			current = this.buttons[this.currentIndex];
+			if (this.joystick.configure(current)) {
+				this.currentIndex++;
+			}
+		}
+	}
+	
+	function render() {
+		this.background.render();
+		Draw.renderRectangle(
+			100, 100, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, 
+			0, 0, 0, 180);
+		
+		if (this.currentIndex < this.buttons.length) {
+			current = this.buttons[this.currentIndex];
+			TextRenderer.render(current, 200, 200);
+		}
+	}
+}

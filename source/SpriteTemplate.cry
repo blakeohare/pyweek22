@@ -1,0 +1,7 @@
+
+class SpriteTemplate {
+	field type;
+	constructor(type) {
+		this.type = type;
+	}
+}

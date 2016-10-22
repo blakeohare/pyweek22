@@ -1,0 +1,77 @@
+static class TextRenderer {
+
+	static field images = null;
+	static field spaceWidth;
+
+	static function initialize() {
+		TextRenderer.images = {
+			'@': 'at',
+			'&': 'ampersand',
+			"'": 'apostrophe',
+			'*': 'asterisk',
+			'\\': 'backslash',
+			'`': 'backtick',
+			'!': 'bang',
+			'}': 'close_brace',
+			']': 'close_bracket',
+			')': 'close_paren',
+			':': 'colon',
+			',': 'comma',
+			'=': 'equals',
+			'^': 'exp',
+			'#': 'hash',
+			'-': 'hyphen',
+			'<': 'lessthan',
+			'$': 'moneys',
+			'{': 'open_brace',
+			'[': 'open_bracket',
+			'(': 'open_paren',
+			'%': 'percentage',
+			'.': 'period',
+			'|': 'pipe',
+			'+': 'plus',
+			'?': 'question',
+			'"': 'quote',
+			';': 'semicolon',
+			'/': 'slash',
+			'~': 'tilde',
+			'_': 'underscore',
+		};
+		
+		for (letter : 'abcdefghijklmnopqrstuvwxyz') {
+			TextRenderer.images[letter.upper()] = letter + '_upper';
+			TextRenderer.images[letter.lower()] = letter + '_lower';
+		}
+		for (i = 0; i < 10; ++i) {
+			TextRenderer.images[str(i)] = 'num_' + i;
+		}
+		
+		for (key in TextRenderer.images.keys()) {
+			TextRenderer.images[key] = ImageLibrary.getAtScale('text/' + TextRenderer.images[key] + '.png', 2);
+		}
+		
+		TextRenderer.spaceWidth = TextRenderer.images.get('v').getWidth();
+	}
+	
+	static function render(text, x, y, xyOut = null) {
+		if (TextRenderer.images == null) TextRenderer.initialize();
+		
+		imagesGet = TextRenderer.images.get;
+		
+		for (c : text) {
+			if (c == ' ') {
+				x += TextRenderer.spaceWidth;
+			} else {
+				img = imagesGet(c) ?? imagesGet('?');
+				img.draw(x, y);
+				x += img.getWidth();
+			}
+		}
+		if (xyOut != null) {
+			while (xyOut.length < 2) xyOut.add(0);
+			xyOut[0] = x;
+			xyOut[1] = imagesGet('X').getHeight();
+		}
+		return xyOut;
+	}
+}

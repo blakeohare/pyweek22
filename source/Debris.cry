@@ -1,0 +1,56 @@
+import Graphics2D;
+import Math;
+
+class Debris {
+	field x;
+	field y;
+	field colorR;
+	field colorG;
+	field colorB;
+	field dead = false;
+	field dissipation;
+	field lifetime = 0;
+	field vx = 0.0;
+	field vy = 0.0;
+	field width = 4.0;
+	field alpha = 255;
+
+	// dissipation values:
+	// - grow-and-fade --> grows while losing opacity
+	constructor(x, y, color, dissipation) {
+		this.x = x;
+		this.y = y;
+		this.colorR = color[0];
+		this.colorG = color[1];
+		this.colorB = color[2];
+		this.dissipation = dissipation;
+	}	
+	
+	function update(scene, timeRatio) {
+		this.x += this.vx * timeRatio;
+		this.y += this.vy * timeRatio;
+		if (this.dissipation == 'grow-and-fade') {
+			this.width += timeRatio / 3.0;
+			alpha = int(255 * (1.0 - this.lifetime / 30.0));
+			if (alpha < 0 || alpha > 255) {
+				alpha = max(0, min(255, alpha));
+			}
+			this.alpha = alpha;
+			if (this.lifetime > 30) {
+				this.dead = true;
+			}
+		}
+		this.lifetime += timeRatio;
+	}
+	
+	function render(cameraOffsetX, cameraOffsetY, rtInt) {
+		left = int(this.x * 32 + cameraOffsetX - this.width / 2 + .5);
+		top = int(this.y * 32 + cameraOffsetY - this.width / 2 + .5);
+		right = left + int(this.width + .5);
+		bottom = top + int(this.width + .5);
+		if (right < 0 || bottom < 0 || left >= SCREEN_WIDTH || top >= SCREEN_HEIGHT) return;
+		Draw.renderRectangle(
+			left, top, right - left, bottom - top,
+			this.color[0], this.color[1], this.color[2], this.alpha);
+	}
+}
