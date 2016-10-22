@@ -1,6 +1,4 @@
 
-const PLAYER_JUMP_VELOCITY = -0.4;
-
 class Sprite {
 	field type;
 	field x;

@@ -12,4 +12,8 @@
 	<target name="python">
 		<platform>game-python-pygame</platform>
 	</target>
+
+	<target name="csharp">
+		<platform>game-csharp-opentk</platform>
+	</target>
 </build>
