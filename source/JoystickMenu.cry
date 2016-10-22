@@ -1,4 +1,5 @@
 import Graphics2D;
+import Math;
 
 class JoystickMenu : AbstractScene {
 	
@@ -28,7 +29,7 @@ class JoystickMenu : AbstractScene {
 					this.activeIndex--;
 				}
 			} else if (event == 'down') {
-				if (this.activeIndex < self.options.length - 1) {
+				if (this.activeIndex < this.options.length - 1) {
 					this.activeIndex++;
 				}
 			} else if (event == 'enter') {
@@ -46,7 +47,7 @@ class JoystickMenu : AbstractScene {
 				} else {
 					parts = option.split(':');
 					if (parts[0] == 'select') {
-						index = int(parts[1]);
+						index = Math.floor(parts[1]);
 						InputManager.setActiveJoystick(index);
 					}
 				}

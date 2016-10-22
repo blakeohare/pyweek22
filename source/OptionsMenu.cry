@@ -1,3 +1,4 @@
+import Graphics2D;
 
 class OptionsMenu : AbstractScene {
 
@@ -22,8 +23,8 @@ class OptionsMenu : AbstractScene {
 					this.activeIndex--;
 				}
 			} else if (event == 'down') {
-				if (this.activeIndex < self.options.length - 1) {
-					self.activeIndex++;
+				if (this.activeIndex < this.options.length - 1) {
+					this.activeIndex++;
 				}
 			} else if (event == 'enter') {
 				command = this.options[this.activeIndex][1];
@@ -58,7 +59,7 @@ class OptionsMenu : AbstractScene {
 		width = SCREEN_WIDTH / 2;
 		top = SCREEN_WIDTH / 8;
 		height = SCREEN_HEIGHT * 3 / 4;
-		Draw.renderRectangle(
+		Draw.rectangle(
 			left, top, width, height,
 			0, 0, 0, 160);
 		
@@ -69,7 +70,7 @@ class OptionsMenu : AbstractScene {
 			option = this.options[i];
 			label = option[0];
 			TextRenderer.render(label, x, y);
-			if (i == self.activeIndex) {
+			if (i == this.activeIndex) {
 				Draw.rectangle(
 					x - 20, y, 10, 10,
 					255, 255, 255);

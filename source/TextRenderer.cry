@@ -43,7 +43,7 @@ static class TextRenderer {
 			TextRenderer.images[letter.lower()] = letter + '_lower';
 		}
 		for (i = 0; i < 10; ++i) {
-			TextRenderer.images[str(i)] = 'num_' + i;
+			TextRenderer.images[i + ''] = 'num_' + i;
 		}
 		
 		for (key : TextRenderer.images.keys()) {

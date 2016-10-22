@@ -1,3 +1,4 @@
+import Graphics2D;
 import Math;
 
 class PlayScene : AbstractScene {
@@ -126,7 +127,7 @@ class PlayScene : AbstractScene {
 		newRtLast = Core.currentTime();
 		diff = newRtLast - this.rtLast; // how long has passed since the last frame?
 		// TODO: adjust diff for bullet-time to slow down animations
-		rt = self.rt + diff; // add that to the render time
+		rt = this.rt + diff; // add that to the render time
 		this.rt = rt;
 		this.rtLast = newRtLast;
 		
@@ -138,8 +139,8 @@ class PlayScene : AbstractScene {
 		this.cameraX = this.cameraX * (1 - cameraInterpolationRatio) + targetCameraX * cameraInterpolationRatio;
 		this.cameraY = this.cameraY * (1 - cameraInterpolationRatio) + targetCameraY * cameraInterpolationRatio;
 		
-		cameraOffsetX = int((-this.cameraX) * 32 + SCREEN_WIDTH / 2);
-		cameraOffsetY = int((-this.cameraY) * 32 + SCREEN_HEIGHT / 2);
+		cameraOffsetX = Math.floor((-this.cameraX) * 32 + SCREEN_WIDTH / 2);
+		cameraOffsetY = Math.floor((-this.cameraY) * 32 + SCREEN_HEIGHT / 2);
 		
 		cameraOffsetXBound = -(this.width * 32 - SCREEN_WIDTH);
 		if (cameraOffsetX > 0) cameraOffsetX = 0;
@@ -174,7 +175,7 @@ class PlayScene : AbstractScene {
 	}
 	
 	function renderSprites(sprites, cameraOffsetX, cameraOffsetY, rt) {
-		ert = int(rt * 60 / 8);
+		ert = Math.floor(rt * 60 / 8);
 		
 		for (sprite : sprites) {
 			sprite.render(cameraOffsetX, cameraOffsetY, ert);

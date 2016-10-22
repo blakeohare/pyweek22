@@ -1,3 +1,6 @@
+import Graphics2D;
+import Math;
+
 static class ImageLibrary {
 	static field imageSheet = null;
 	static field imageFiles = {};
@@ -27,7 +30,7 @@ static class ImageLibrary {
 				}
 			}
 				
-			img = GraphiscTexture.load(ImageLibrary.imageSheet.getImage(rpath));
+			img = GraphicsTexture.load(ImageLibrary.imageSheet.getImage(rpath));
 			if (reverse) {
 				if (ImageLibrary.images.get(rpath) == null) {
 					ImageLibrary.images[rpath] = img;
@@ -40,7 +43,7 @@ static class ImageLibrary {
 	}
 	
 	static function getAtScale(path, scale) {
-		scaleKey = int(scale * 1000);
+		scaleKey = Math.floor(scale * 1000);
 		lookup = ImageLibrary.imagesByScale.get(scaleKey);
 		if (lookup == null) {
 			lookup = {};
@@ -49,8 +52,8 @@ static class ImageLibrary {
 		img = lookup.get(path);
 		if (img == null) {
 			img = ImageLibrary.get(path);
-			width = int(img.getWidth() * scale);
-			height = int(img.getHeight() * scale);
+			width = Math.floor(img.getWidth() * scale);
+			height = Math.floor(img.getHeight() * scale);
 			img = img.scale(width, height);
 			lookup[path] = img;
 		}

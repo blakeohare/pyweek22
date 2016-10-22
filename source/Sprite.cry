@@ -1,6 +1,7 @@
+import Math;
+import Random;
 
 class Sprite {
-	field type;
 	field x;
 	field y;
 	field template;
@@ -20,7 +21,6 @@ class Sprite {
 	field lastWallDragWasNFramesAgo = 99999;
 
 	constructor(template, x, y) {
-		this.type = type;
 		this.x = x + 0.0;
 		this.y = y + 0.0;
 		this.template = template;
@@ -119,8 +119,8 @@ class Sprite {
 					
 					tile = newColumnTiles[row];
 					if (tile != null && tile.blocking) {
-						self.draggingAgainstWall = true;
-						self.vx = 0;
+						this.draggingAgainstWall = true;
+						this.vx = 0;
 						return; // Collision
 					}
 
@@ -135,11 +135,11 @@ class Sprite {
 				
 				if (!tile.isIncline) {
 					this.draggingAgainstWall = true;
-					self.vx = 0;
+					this.vx = 0;
 					return; // Collision
 				}
 				
-				collisionY = self.y % 1.0;
+				collisionY = this.y % 1.0;
 				if (collisionY < 0.01) collisionY = 0.01;
 				else if (collisionY > 0.99) collisionY = 0.99;
 				
@@ -161,12 +161,12 @@ class Sprite {
 				
 				if (tile.inclineType == 'down') {
 					if (oldCol < newCol) {
-						self.vx = 0;
+						this.vx = 0;
 						return;
 					}
 					if (collisionY + 1 - collisionX < 1) {
-						self.x = newX;
-						self.vx = 0;
+						this.x = newX;
+						this.vx = 0;
 						return;
 					}
 					this.x = newCol + collisionY + 1.0;
@@ -212,7 +212,7 @@ class Sprite {
 					return;
 				}
 				
-				Core.fail("Unknown inclineType: '" + tile.inclineType + "'");
+				Core.fail("Unknown inclineType: '" + type + "'");
 			}
 			
 			//////
@@ -297,11 +297,11 @@ class Sprite {
 				//////
 				// If the player is walking off of a platform, then they will enter freefall mode but keep their current Y value initially.
 				//////
-				newY = self.y;
+				newY = this.y;
 			}
 			
 			newRowBottom = Math.floor(newY);
-			newRowTop = Math.floor(newY - self.effectiveHeight);
+			newRowTop = Math.floor(newY - this.effectiveHeight);
 			row = newRowTop;
 			collision = false;
 			while (row < newRowBottom) { // don't check row bottom
@@ -323,7 +323,7 @@ class Sprite {
 	
 	function updateVerticalGoingUp(scene, dy) {
 		col = Math.floor(this.x);
-		newRow = Math.floor(this.y + dy - self.effectiveHeight);
+		newRow = Math.floor(this.y + dy - this.effectiveHeight);
 		if (newRow < 0) return; // hit the top
 		tile = scene.tiles[col][newRow];
 		if (tile != null && (tile.blocking || tile.isIncline)) {
@@ -425,11 +425,11 @@ class Sprite {
 					dust = new Debris(this.x, this.y, [128, 128, 128], 'grow-and-fade');
 					scene.sprites.append(dust);
 					dust.vx = this.vx / 10.0 + Random.randomFloat() * 0.03 - 0.015;
-					dust.vy = -0.02 + Rnadom.randomFloat() * 0.02;
+					dust.vy = -0.02 + Random.randomFloat() * 0.02;
 				}
 			}
 		} else {
-			self.dustCounter--;
+			this.dustCounter--;
 		}
 			
 		
@@ -450,7 +450,7 @@ class Sprite {
 		}
 		if (dx != 0) {
 			this.updateHorizontal(scene, dx);
-			if (self.draggingAgainstWall) {
+			if (this.draggingAgainstWall) {
 				if (dy <= 0) {
 					// moving up or stationary so not really dragging against it
 					this.draggingAgainstWall = false;
@@ -458,7 +458,7 @@ class Sprite {
 					// slow down descent
 					if (dy > .03) {
 						dy = .03;
-						self.vy = 0.03;
+						this.vy = 0.03;
 					}
 				}
 			}

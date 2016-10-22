@@ -1,3 +1,4 @@
+import Gamepad;
 
 class JoystickWrapper {
 	field index;
@@ -23,15 +24,15 @@ class JoystickWrapper {
 	}
 
 	function saveConfig() {
-		GamepadManager.saveConfiguration();
+		GamepadManager.saveSettingsToUserData();
 	}
 
 	function getBooleanState(action) {
-		this.getState(action) == true;
+		return this.getState(action) == true;
 	}
 	
 	function getAxisState() {
-		this.device.getState(XBoxButton.AXIS1);
+		return this.device.getState(XBoxButtonId.AXIS1);
 	}
 
 	function getState() {
