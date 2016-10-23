@@ -423,7 +423,7 @@ class Sprite {
 				this.dustCounter = 5;
 				for (i = 0; i < 5; ++i) {
 					dust = new Debris(this.x, this.y, [128, 128, 128], 'grow-and-fade');
-					scene.sprites.append(dust);
+					scene.sprites.add(dust);
 					dust.vx = this.vx / 10.0 + Random.randomFloat() * 0.03 - 0.015;
 					dust.vy = -0.02 + Random.randomFloat() * 0.02;
 				}
