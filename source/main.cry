@@ -1,9 +1,17 @@
 import Game;
+import Gamepad;
 import Graphics2D;
+import ImageResources;
 
 function main() {
 	
 	window = new GameWindow("Platformer", FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	GamepadManager.refreshDevices();
+
+	imageSheet = ImageSheet.loadFromResources('all');
+
+	ImageLibrary.setImageSheet(imageSheet);
 
 	scene = new PlayScene();
 	

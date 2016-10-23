@@ -6,7 +6,8 @@ class TileStore {
 		TileStore.tiles = {};
 		lines = Resources.readText('images/tiles/manifest.txt').split('\n');
 		for (line : lines) {
-			if (line[0] != '#') {
+			line = line.trim();
+			if (line.length > 0 && line[0] != '#') {
 				cols = line.split('\t');
 				tileId = cols[0];
 				flags = stringToList(cols[1]);

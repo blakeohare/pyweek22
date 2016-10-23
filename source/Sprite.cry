@@ -533,8 +533,8 @@ class Sprite {
 		}
 		
 		img = ImageLibrary.getAtScale(path, 4);
-		left = Math.floor(centerX - img.getWidth() / 2 + xOffset);
-		top = Math.floor(bottomY - img.get_height() + yOffset);
+		left = Math.floor(centerX - img.width / 2 + xOffset);
+		top = Math.floor(bottomY - img.height + yOffset);
 		img.draw(left, top);
 	}
 }

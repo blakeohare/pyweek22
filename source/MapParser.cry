@@ -13,6 +13,7 @@ class MapParser {
 		
 		mode = null;
 		for (line : lines) {
+			line = line.trim();
 			if (line[0] == '#') {
 				parts = line[1:].split(':');
 				key = parts[0].trim().lower();
@@ -29,7 +30,7 @@ class MapParser {
 				} else if (items.length != width) {
 					Core.fail(
 						"Error while parsing map '" + id + "': row " + (tileLines.length + 1) + 
-						" does not have expected number of tiles (" + width + ")");
+						" does not have expected number of tiles (" + width + ") found " + items.length);
 				}
 				tileLines.add(items);
 			} else if (mode == 'sprites') {

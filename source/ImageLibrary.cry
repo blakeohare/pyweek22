@@ -52,8 +52,8 @@ static class ImageLibrary {
 		img = lookup.get(path);
 		if (img == null) {
 			img = ImageLibrary.get(path);
-			width = Math.floor(img.getWidth() * scale);
-			height = Math.floor(img.getHeight() * scale);
+			width = Math.floor(img.width * scale);
+			height = Math.floor(img.height * scale);
 			img = img.scale(width, height);
 			lookup[path] = img;
 		}
