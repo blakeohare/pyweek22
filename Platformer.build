@@ -1,7 +1,7 @@
 <build>
 	<projectname>Platformer</projectname>
 	<source>source</source>
-	<output>output</output>
+	<output>output/%TARGET_NAME%</output>
 
 	<imagesheets>
 		<sheet id="all">
