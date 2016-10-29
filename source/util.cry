@@ -1,0 +1,16 @@
+function makeGrid(width, height) {
+	output = [];
+	while (width > 0) {
+		width--;
+		output.add([null] * height);
+	}
+	return output;
+}
+
+function stringToList(string) {
+	output = [];
+	for (c : string) {
+		output.add(c);
+	}
+	return output;
+}

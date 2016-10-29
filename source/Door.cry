@@ -1,0 +1,12 @@
+class Door {
+	
+	field id;
+	field col;
+	field row;
+
+	constructor(id, col, row) {
+		this.id = id;
+		this.col = col;
+		this.row = row;
+	}
+}

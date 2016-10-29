@@ -1,0 +1,184 @@
+import Graphics2D;
+import Math;
+
+class PlayScene : AbstractScene {
+	
+	field width;
+	field height;
+	field tiles;
+	field music;
+	field sprites;
+	field doors;
+	field player;
+	field cameraX;
+	field cameraY;
+	field rt = 0.0; // current time as far as the renderer is concerned
+	field rtLast;
+	field magicJumpCounter = -1;
+	field animationSpeedRatio = 1.0;
+
+	constructor() : base() {
+		this.isPlayScene = true;
+		values = MapParser.parseMap('test');
+		this.width = values['width'];
+		this.height = values['height'];
+		this.tiles = values['tiles'];
+		this.music = values['music'];
+		this.sprites = [];
+		for (spriteAttr : values['sprites']) {
+			// TODO: add sprites
+		}
+		
+		this.doors = values['doors'];
+		startingDoor = this.doors[values['startDoorId']];
+		
+		this.player = new Sprite('player', startingDoor.col + .5, startingDoor.row + 1);
+		this.sprites = [this.player] + this.sprites;
+		
+		this.cameraX = this.player.x;
+		this.cameraY = this.player.y;
+		
+		this.rtLast = Core.currentTime(); // the last time the rt value was updated
+	}
+		
+	function update() {
+		player = this.player;
+		playerPos = [player.x, player.y];
+		
+		if (InputManager.isMagicJumpPressed()) {
+			if (this.magicJumpCounter < 0) {
+				this.magicJumpCounter = 1;
+			} else {
+				this.magicJumpCounter++;
+			}
+		} else if (this.magicJumpCounter > 20) {
+			this.magicJumpCounter = 19;
+		} else {
+			this.magicJumpCounter--;
+		}
+		
+		mjcRatio = Math.ensureRange(this.magicJumpCounter / 20.0, 0.0, 1.0);
+
+		timeRatio = 1.0 - (1.0 - TIME_SLOWDOWN_RATIO) * mjcRatio;
+		
+		// Apply horizontal movement and inertia
+		movementVector = InputManager.getDirectionVector();
+		xMovement = movementVector[0];
+		player.forceAppliedX = xMovement;
+		vx = player.vx;
+		if (player.ground == null) {
+			vx += xMovement * PLAYER_WALK_ACCELERATION * 0.8;
+		} else {
+			vx += xMovement * PLAYER_WALK_ACCELERATION;
+		}
+
+		vx = Math.ensureRange(vx, -0.2, 0.2);
+		
+		slowdownRatio = player.ground != null ? 0.84 : 0.5;
+		if (xMovement == 0) {
+			vx *= slowdownRatio;
+			if (vx < 0.01 && vx > -0.01) {
+				vx = 0;
+			}
+		}
+		player.vx = vx;
+		
+		if (InputManager.jumpPressed && 
+			(player.ground != null || player.lastWallDragWasNFramesAgo < 8)) {
+			if (InputManager.jumpPressedThisFrame) {
+				if (player.ground != null) {
+					player.vy = PLAYER_JUMP_VELOCITY;
+				} else {
+					// wall drag
+					player.vy = PLAYER_WALLJUMP_VELOCITY_Y;
+				}
+				
+				player.ground = null;
+				player.y -= .001;
+				if (player.draggingAgainstWall) {
+					player.vx = (PLAYER_WALK_ACCELERATION * 6) * (player.x % 1 > .5 ? -1 : 1);
+				}
+				
+				player.dx = 0;
+			}
+		} else if (InputManager.jumpReleasedThisFrame && player.ground == null && player.vy < 0) {
+			player.vy *= .3;
+		}
+		
+		newSprites = [];
+		dt = 1.0 * timeRatio;
+		for (sprite : this.sprites) {
+			sprite.update(this, dt);
+			if (!sprite.dead) {
+				newSprites.add(sprite);
+			}
+		}
+		this.sprites = newSprites;
+		
+		if (InputManager.escapePressed) {
+			this._next = new OptionsMenu(this);
+		}
+	}
+
+	function render() {
+		
+		Draw.fill(10, 40, 80);
+		
+		newRtLast = Core.currentTime();
+		diff = newRtLast - this.rtLast; // how long has passed since the last frame?
+		// TODO: adjust diff for bullet-time to slow down animations
+		rt = this.rt + diff; // add that to the render time
+		this.rt = rt;
+		this.rtLast = newRtLast;
+		
+		targetCameraX = this.player.x;
+		targetCameraY = this.player.y;
+		
+		cameraInterpolationRatio = .1;
+		
+		this.cameraX = this.cameraX * (1 - cameraInterpolationRatio) + targetCameraX * cameraInterpolationRatio;
+		this.cameraY = this.cameraY * (1 - cameraInterpolationRatio) + targetCameraY * cameraInterpolationRatio;
+		
+		cameraOffsetX = Math.floor((-this.cameraX) * 32 + SCREEN_WIDTH / 2);
+		cameraOffsetY = Math.floor((-this.cameraY) * 32 + SCREEN_HEIGHT / 2);
+		
+		cameraOffsetXBound = -(this.width * 32 - SCREEN_WIDTH);
+		if (cameraOffsetX > 0) cameraOffsetX = 0;
+		else if (cameraOffsetX < cameraOffsetXBound) cameraOffsetX = cameraOffsetXBound;
+		cameraOffsetYBound = -(this.height * 32 - SCREEN_HEIGHT);
+		if (cameraOffsetY > 0) cameraOffsetY = 0;
+		else if (cameraOffsetY < cameraOffsetYBound) cameraOffsetY = cameraOffsetYBound;
+		
+		this.renderTiles(cameraOffsetX, cameraOffsetY, rt);
+		this.renderSprites(this.sprites, cameraOffsetX, cameraOffsetY, rt);
+	}
+
+	function renderTiles(cameraOffsetX, cameraOffsetY, rt) {
+		
+		py = cameraOffsetY;
+		for (row = 0; row < this.height; ++row) {
+			px = cameraOffsetX;
+			for (col = 0; col < this.width; ++col) {
+				tile = this.tiles[col][row];
+				if (tile != null) {
+					img = tile.staticImage;
+					if (img == null) {
+						images = tile.images;
+						img = images[Math.floor(rt * (8.0 / 60) * this.animationSpeedRatio) % images.length];
+					}
+					img.draw(px, py);
+				}
+				px += 32;
+			}
+			py += 32;
+		}
+	}
+	
+	function renderSprites(sprites, cameraOffsetX, cameraOffsetY, rt) {
+		ert = Math.floor(rt * 60 / 8);
+		
+		for (sprite : sprites) {
+			sprite.render(cameraOffsetX, cameraOffsetY, ert);
+		}
+	}
+}

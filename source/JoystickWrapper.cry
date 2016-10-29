@@ -1,0 +1,42 @@
+import Gamepad;
+
+class JoystickWrapper {
+	field index;
+	field device;
+	field alreadyConfigured = true;
+
+	constructor (index, actualJs) {
+		this.index = index;
+		this.device = actualJs;
+	}
+
+	function pushCleanConfig() {
+		this.device.pushConfig();
+	}
+	
+	function initialize() { }
+	
+	function popConfig() {
+		this.device.popConfig();
+	}
+	
+	function flattenConfig() {
+		this.device.flattenConfig();
+	}
+
+	function saveConfig() {
+		GamepadManager.saveSettingsToUserData();
+	}
+
+	function getBooleanState(action) {
+		return this.getState(action) == true;
+	}
+	
+	function getAxisState() {
+		return this.device.getState(XBoxButtonId.AXIS1);
+	}
+
+	function getState() {
+		Core.fail("TODO: implement");
+	}
+}

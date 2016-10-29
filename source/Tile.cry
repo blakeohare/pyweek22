@@ -1,0 +1,23 @@
+
+class Tile {
+	field images;
+	field col;
+	field row;
+	field blocking;
+	field bar;
+	field isIncline;
+	field inclineType;
+	field staticImage;
+
+	constructor(template, col, row) {
+		this.images = template.images;
+		this.col = col;
+		this.row = row;
+		this.blocking = template.blocking;
+		this.bar = template.bar;
+		this.isIncline = template.isIncline;
+		this.inclineType = template.inclineType;
+		if (this.images.length > 1) this.staticImage = null;
+		else this.staticImage = this.images[0];
+	}
+}

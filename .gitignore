@@ -1,2 +1,5 @@
+.DS_Store
 /run.py
 /joystick-config-*.txt
+
+/output

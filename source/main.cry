@@ -1,0 +1,37 @@
+import Game;
+import Gamepad;
+import Graphics2D;
+import ImageResources;
+
+function main() {
+	
+	window = new GameWindow("Platformer", FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	imageSheet = ImageSheet.loadFromResources('all');
+
+	ImageLibrary.setImageSheet(imageSheet);
+
+	scene = new PlayScene();
+	
+	knownJoysticks = 0;
+	
+	while (true) {
+		InputManager.updateJoystickState();
+		
+		InputManager.applySystemEvents(scene, window.pumpEvents());
+		if (InputManager.quitAttempted) {
+			return;
+		}
+		
+		Draw.fill(0, 0, 0);
+		
+		scene.update();
+		scene.render();
+		
+		if (scene._next != null) {
+			scene = scene._next;
+		}
+
+		window.clockTick();
+	}
+}
