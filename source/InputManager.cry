@@ -134,14 +134,19 @@ static class InputManager {
 				InputManager.quitAttempted = true;
 			} else if (event.type == EventType.GAMEPAD) {
 				if (event.device == InputManager.activeJoystick) {
-					if (event.buttonId == XBoxButtonId.A) {
-						down = event.value == true;
-						if (down) InputManager.menuEventQueue.add('enter');
-						InputManager.jumpPressed = down;
-						InputManager.jumpPressedThisFrame = down;
-						if (!down) {
-							InputManager.jumpReleasedThisFrame = true;
-						}
+					switch (event.buttonId) {
+						case XBoxButtonId.A:
+							down = event.value == true;
+							if (down) InputManager.menuEventQueue.add('enter');
+							InputManager.jumpPressed = down;
+							InputManager.jumpPressedThisFrame = down;
+							if (!down) {
+								InputManager.jumpReleasedThisFrame = true;
+							}
+							break;
+						case XBoxButtonId.START:
+							InputManager.escapePressed = event.value == true;
+							break;
 					}
 				}
 			}
