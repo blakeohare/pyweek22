@@ -7,15 +7,16 @@ function main() {
 	
 	window = new GameWindow("Platformer", FPS, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	GamepadManager.refreshDevices();
-
 	imageSheet = ImageSheet.loadFromResources('all');
 
 	ImageLibrary.setImageSheet(imageSheet);
 
 	scene = new PlayScene();
 	
+	knownJoysticks = 0;
+	
 	while (true) {
+		InputManager.updateJoystickState();
 		
 		InputManager.applySystemEvents(scene, window.pumpEvents());
 		if (InputManager.quitAttempted) {

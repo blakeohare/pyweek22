@@ -2,7 +2,9 @@ import Graphics2D;
 import Math;
 
 class JoystickMenu : AbstractScene {
-	
+
+	constructor(a) : base() { }
+	/*
 	field background;
 	field options;
 	field activeIndex = 0;
@@ -83,4 +85,5 @@ class JoystickMenu : AbstractScene {
 			y += 50;
 		}
 	}
+	//*/
 }

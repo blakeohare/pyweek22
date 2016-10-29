@@ -20,4 +20,9 @@
 	<target name="java">
 		<platform>game-java-awt</platform>
 	</target>
+	
+	<target name="javascript">
+		<platform>game-javascript</platform>
+		<jsfileprefix>demos/platformer</jsfileprefix>
+	</target>
 </build>

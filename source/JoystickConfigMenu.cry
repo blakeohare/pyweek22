@@ -1,7 +1,10 @@
 import Graphics2D;
 
 class JoystickConfigMenu : AbstractScene {
-	
+
+	constructor(a, b) : base() { }
+
+	/*
 	field background;
 	field joystick;
 	field currentIndex = 0;
@@ -61,4 +64,5 @@ class JoystickConfigMenu : AbstractScene {
 			TextRenderer.render(current, 200, 200);
 		}
 	}
+	//*/
 }

@@ -17,24 +17,44 @@ static class InputManager {
 	static field joystickMagicJumpPressed = false;
 	static field systemKeysPressed = {};
 	static field escapePressed = false;
-	static field joysticks = null;
-	static field activeJoystick = -1;
+	//static field joysticks = null;
+	//static field activeJoystick = -1;
 	
+	/*
 	static function getActiveJoystick() {
 		if (InputManager.activeJoystick == -1) return null;
 		return InputManager.joysticks[InputManager.activeJoystick];
+	}//*/
+	
+	static field knownDeviceCount = 0;
+	static field activeJoystick = null;
+	
+	static function updateJoystickState() {
+		GamepadManager.refreshDevices();
+		if (InputManager.knownDeviceCount == 0) {
+			
+			newDeviceCount = GamepadManager.getDeviceCount();
+			if (newDeviceCount != InputManager.knownDeviceCount) {
+				InputManager.knownDeviceCount = newDeviceCount;
+				InputManager.activeJoystick = GamepadManager.getDeviceByIndex(0);
+				InputManager.activeJoystick.pushAutoConfigure();
+			}
+		}
 	}
 	
+	/*
 	static function setActiveJoystick(index) {
 		js = InputManager.joysticks[index];
 		InputManager.activeJoystick = index;
 		js.initialize();
-	}
+	}//*/
 	
+	/*
 	static function clearActiveJoystick() {
 		InputManager.activeJoystick = -1;
-	}
+	}//*/
 	
+	/*
 	static function getJoysticks() {
 		if (InputManager.joysticks == null) {
 			InputManager.joysticks = [];
@@ -48,10 +68,10 @@ static class InputManager {
 			}
 		}
 		return InputManager.joysticks;
-	}
+	}//*/
 	
 	static function applySystemEvents(activeScene, events) {
-		InputManager.getJoysticks();
+		//InputManager.getJoysticks();
 		
 		// Reset all values
 		InputManager.menuEventQueue.clear();
@@ -112,6 +132,18 @@ static class InputManager {
 				}
 			} else if (event.type == EventType.QUIT) {
 				InputManager.quitAttempted = true;
+			} else if (event.type == EventType.GAMEPAD) {
+				if (event.device == InputManager.activeJoystick) {
+					if (event.buttonId == XBoxButtonId.A) {
+						down = event.value == true;
+						if (down) InputManager.menuEventQueue.add('enter');
+						InputManager.jumpPressed = down;
+						InputManager.jumpPressedThisFrame = down;
+						if (!down) {
+							InputManager.jumpReleasedThisFrame = true;
+						}
+					}
+				}
 			}
 		}
 		
@@ -123,6 +155,16 @@ static class InputManager {
 		InputManager.keyboardMoveVector[0] = leftPressed ? -1 : rightPressed ? 1 : 0;
 		InputManager.keyboardMoveVector[1] = upPressed ? -1 : downPressed ? 1 : 0;
 		
+		joystick = InputManager.activeJoystick;
+		if (joystick != null) {
+			axis = joystick.getCurrentState(XBoxButtonId.AXIS1);
+			if (axis != null) {
+				InputManager.joystickMoveVector = axis;
+			}
+		}
+		
+		
+		/*
 		joystick = InputManager.getActiveJoystick();
 		if (joystick != null) {
 			InputManager.joystickMoveVector[0] = joystick.getAxis('move-left', 'move-right', true);
@@ -158,6 +200,7 @@ static class InputManager {
 		} else {
 			InputManager.joystickMagicJumpPressed = false;
 		}
+		//*/
 	}
 		
 	static function getMenuEvents() {

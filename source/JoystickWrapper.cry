@@ -3,6 +3,7 @@ import Gamepad;
 class JoystickWrapper {
 	field index;
 	field device;
+	field alreadyConfigured = true;
 
 	constructor (index, actualJs) {
 		this.index = index;
