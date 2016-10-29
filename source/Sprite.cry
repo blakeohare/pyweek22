@@ -19,6 +19,7 @@ class Sprite {
 	field dustCounter = -1;
 	field forceAppliedX = 0.0;
 	field lastWallDragWasNFramesAgo = 99999;
+	field skipVX = false;
 
 	constructor(template, x, y) {
 		this.x = x + 0.0;
@@ -27,6 +28,7 @@ class Sprite {
 	}
 	
 	function updateHorizontal(scene, dx) {
+		if (this.skipVX) return;
 		
 		newX = this.x + dx;
 		newCol = Math.floor(newX);
@@ -406,6 +408,7 @@ class Sprite {
 		
 		this.draggingAgainstWall = false;
 		this.updateImpl(scene);
+		this.skipVX = false;
 	}
 	
 	// Note: the collision box of the player for the purposes of movement is actually just a vertical line

@@ -88,6 +88,11 @@ class PlayScene : AbstractScene {
 			if (InputManager.jumpPressedThisFrame) {
 				if (player.ground != null) {
 					player.vy = PLAYER_JUMP_VELOCITY;
+					// if you are running up an incline, the x component of the velocity will cancel out 
+					// the up vector before it has a chance to get applied.
+					if (player.ground.isIncline) {
+						player.skipVX = true;
+					}
 				} else {
 					// wall drag
 					player.vy = PLAYER_WALLJUMP_VELOCITY_Y;
