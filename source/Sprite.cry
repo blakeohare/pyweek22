@@ -50,7 +50,7 @@ class Sprite {
 			} else {
 				collisionX = 1.0; // check the rightmost point in this tile if you're moving right out of this tile
 			}
-			collisionY = (this.y) % 1.0;
+			collisionY = this.y % 1.0;
 			
 			bottomTile = oldColumnTiles[rowBottom];
 			passable = bottomTile == null || !bottomTile.blocking || bottomTile.bar;

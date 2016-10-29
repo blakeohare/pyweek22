@@ -73,9 +73,9 @@ class PlayScene : AbstractScene {
 		}
 
 		vx = Math.ensureRange(vx, -0.2, 0.2);
-		
+		maxValue = Math.abs(xMovement * .2);
 		slowdownRatio = player.ground != null ? 0.84 : 0.5;
-		if (xMovement == 0) {
+		if (xMovement == 0 || (Math.abs(xMovement) > maxValue && player.ground != null)) {
 			vx *= slowdownRatio;
 			if (vx < 0.01 && vx > -0.01) {
 				vx = 0;
