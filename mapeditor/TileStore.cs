@@ -16,7 +16,7 @@ namespace MapEditor
             if (tiles != null) return;
 
             string gitRoot = Util.GetGitRoot();
-            string manifestPath = System.IO.Path.Combine(gitRoot, "images", "tiles", "manifest.txt");
+            string manifestPath = System.IO.Path.Combine(gitRoot, "source", "images", "tiles", "manifest.txt");
             foreach (string line in System.IO.File.ReadAllLines(manifestPath))
             {
                 string trimmedLine = line.Trim();
@@ -26,7 +26,7 @@ namespace MapEditor
                     string id = parts[0];
                     string flags = parts[1];
                     string imagePath = parts[2].Split(',')[0];
-                    Tile tile = new Tile(id, imagePath, System.IO.Path.Combine(gitRoot, "images", "tiles", (imagePath + ".png").Replace('/', '\\')));
+                    Tile tile = new Tile(id, imagePath, System.IO.Path.Combine(gitRoot, "source", "images", "tiles", (imagePath + ".png").Replace('/', '\\')));
                     idsToTiles[id] = tile;
                     idsToPaths[id] = imagePath;
                 }

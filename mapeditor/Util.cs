@@ -14,7 +14,7 @@ namespace MapEditor
             if (gitRoot == null)
             {
                 string walker = System.IO.Directory.GetCurrentDirectory();
-                while (!System.IO.File.Exists(System.IO.Path.Combine(walker, "run27.bat")))
+                while (!System.IO.File.Exists(System.IO.Path.Combine(walker, "Platformer.build")))
                 {
                     walker = System.IO.Path.GetDirectoryName(walker);
                 }

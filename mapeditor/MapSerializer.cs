@@ -20,8 +20,8 @@ namespace MapEditor
             Dictionary<string, string> values = new Dictionary<string, string>();
             int width = map.Width;
             int height = map.Height;
-            values["width"] = width + "";
-            values["height"] = height + "";
+            //values["width"] = width + "";
+            //values["height"] = height + "";
 
             List<string> tileStringBuilder = new List<string>();
             Tile tile;
@@ -33,21 +33,31 @@ namespace MapEditor
                     tile = tiles[x, y];
                     if (tile == null)
                     {
-                        tileStringBuilder.Add("");
+                        tileStringBuilder.Add(".");
                     }
                     else
                     {
                         tileStringBuilder.Add(tile.ID);
                     }
                 }
+                tileStringBuilder.Add("\n");
             }
 
-            values["tiles"] = string.Join(",", tileStringBuilder);
-
+            values["tiles"] = string.Join("", tileStringBuilder).Trim();
+            
             List<string> output = new List<string>();
             foreach (string key in values.Keys.OrderBy(k => k.ToLower()))
             {
-                output.Add(key + ":" + values[key]);
+                string value = values[key];
+                if (value.Contains("\n"))
+                {
+                    output.Add("#" + key);
+                    output.Add(value);
+                }
+                else
+                {
+                    output.Add("#" + key + ":" + value);
+                }
             }
 
             return string.Join("\n", output);
