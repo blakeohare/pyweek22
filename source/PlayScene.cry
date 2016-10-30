@@ -160,10 +160,15 @@ class PlayScene : AbstractScene {
 
 	function renderTiles(cameraOffsetX, cameraOffsetY, rt) {
 		
-		py = cameraOffsetY;
-		for (row = 0; row < this.height; ++row) {
-			px = cameraOffsetX;
-			for (col = 0; col < this.width; ++col) {
+		colLeft = Math.max(0, -cameraOffsetX / 32 - 2);
+		colRight = Math.min(this.width, colLeft + SCREEN_WIDTH / 32 + 4);
+		rowTop = Math.max(0, -cameraOffsetY / 32 - 2);
+		rowBottom = Math.min(this.height, rowTop + SCREEN_HEIGHT / 32 + 4);
+		
+		for (row = rowTop; row < rowBottom; ++row) {
+			py = cameraOffsetY + row * 32;
+			for (col = colLeft; col < colRight; ++col) {
+				px = cameraOffsetX + col * 32;
 				tile = this.tiles[col][row];
 				if (tile != null) {
 					img = tile.staticImage;
@@ -173,9 +178,7 @@ class PlayScene : AbstractScene {
 					}
 					img.draw(px, py);
 				}
-				px += 32;
 			}
-			py += 32;
 		}
 	}
 	
