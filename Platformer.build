@@ -10,19 +10,24 @@
 	</imagesheets>
 
 	<target name="python">
-		<platform>game-python-pygame</platform>
+		<platform>python-app</platform>
 	</target>
 
 	<target name="csharp">
-		<platform>game-csharp-opentk</platform>
+		<platform>csharp-app</platform>
 	</target>
 
 	<target name="java">
-		<platform>game-java-awt</platform>
+		<platform>java-app</platform>
 	</target>
 	
 	<target name="javascript">
-		<platform>game-javascript</platform>
+		<platform>javascript-app-gl</platform>
 		<jsfileprefix>demos/platformer</jsfileprefix>
+	</target>
+	
+	<target name="games_browser">
+		<platform>javascript-app-gl</platform>
+		<jsfileprefix>games/pyweek22</jsfileprefix>
 	</target>
 </build>
