@@ -25,9 +25,4 @@
 		<platform>javascript-app-gl</platform>
 		<jsfileprefix>demos/platformer</jsfileprefix>
 	</target>
-	
-	<target name="games_browser">
-		<platform>javascript-app-gl</platform>
-		<jsfileprefix>games/pyweek22</jsfileprefix>
-	</target>
 </build>
