@@ -1,28 +1,34 @@
-<build>
-	<projectname>Platformer</projectname>
-	<source>source</source>
-	<output>output/%TARGET_NAME%</output>
+﻿{
+    "id": "Platformer",
+    "source": "source/",
+    "output": "output/%TARGET_NAME%",
+    "title": "Platformer",
+    "icons": [],
+    "version": "1.0",
+    "iosBundlePrefix": "com.yourname.Platformer,%VERSION%",
+    "guidSeed": "com.yourname.Platformer,v1,%TARGET_NAME%",
 
-	<imagesheets>
-		<sheet id="all">
-			<prefix>images/</prefix>
-		</sheet>
-	</imagesheets>
+    "imageSheets": [
+        { "id": "all", "prefix": "*" }
+    ],
 
-	<target name="python">
-		<platform>python-app</platform>
-	</target>
-
-	<target name="csharp">
-		<platform>csharp-app</platform>
-	</target>
-
-	<target name="java">
-		<platform>java-app</platform>
-	</target>
-	
-	<target name="javascript">
-		<platform>javascript-app-gl</platform>
-		<jsfileprefix>demos/platformer</jsfileprefix>
-	</target>
-</build>
+    "targets": [
+        {
+            "name": "android",
+            "platform": "javascript-app-android"
+        },
+        {
+            "name": "ios",
+            "platform": "javascript-app-ios"
+        },
+        {
+            "name": "javascript",
+            "platform": "javascript-app",
+            "jsFilePrefix": "demos/platformer"
+        },
+        {
+            "name": "csharp",
+            "platform": "csharp-app"
+        }
+    ]
+}
